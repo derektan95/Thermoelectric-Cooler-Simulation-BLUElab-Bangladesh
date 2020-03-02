@@ -1,7 +1,7 @@
 %% Load essential parameters
 
 % warning('off','all');           % Turn off all warnings
-run("param_thermoelectric_cooling.m");
+run("prof_param_thermoelectric_cooling.m");
 
 %% Declare variables as global for use in other scripts (bad practice)
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
@@ -59,7 +59,7 @@ for i = 1:length(delta_J_arr)
     
     % x = T_h, y = T_c, z = Q_c
     syms x y z
-    eqn1 = ((x - y) / R_k_hc) + ((x-inlet_temp_hot)/1.515) == (num_semi_cond * alpha_seeback * J_e * x) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
+    eqn1 = ((x - y) / R_k_hc) + ((x-inlet_temp_hot) / 1.515) == (num_semi_cond * alpha_seeback * J_e * x) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
     eqn2 = (-(x - y) / R_k_hc) + z == (-num_semi_cond * alpha_seeback * J_e * y) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
     eqn3 = z == (y - inlet_temp_cold) / 0.4183;
 
