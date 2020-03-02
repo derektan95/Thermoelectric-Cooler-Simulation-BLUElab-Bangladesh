@@ -13,16 +13,16 @@ global R_e_hc R_k_hc alpha_seeback num_semi_cond
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
 J_iters = 20;
-J_max = 2.0;
+J_max = 4.0;
 
 % Initial conditions - Cold Side 
-inlet_temp_cold = 293.15;   % K
+inlet_temp_cold = 308.15;   % K
 air_speed_cold = 1;      % m/s
 m_dot_air_cold = Area_cross_sect * rho_air * air_speed_cold;
 
 % Initial conditions - Hot Side 
-inlet_temp_hot = 298.15;   % K
-air_speed_hot = 1;      % m/s  
+inlet_temp_hot = 308.15;   % K
+air_speed_hot = 3.5;      % m/s  
 
 % Fin conditions - Cold Side
 fin_area_total_cold = 0.05;      % Given by prof's example [m]       
@@ -59,9 +59,9 @@ for i = 1:length(delta_J_arr)
     
     % x = T_h, y = T_c, z = Q_c
     syms x y z
-    eqn1 = ((x - y) / R_k_hc) + ((x-inlet_temp_hot) / 1.515) == (num_semi_cond * alpha_seeback * J_e * x) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
+    eqn1 = ((x - y) / R_k_hc) + ((x-inlet_temp_hot) / R_ku_hot) == (num_semi_cond * alpha_seeback * J_e * x) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
     eqn2 = (-(x - y) / R_k_hc) + z == (-num_semi_cond * alpha_seeback * J_e * y) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
-    eqn3 = z == (y - inlet_temp_cold) / 0.4183;
+    eqn3 = z == (y - inlet_temp_cold) / R_ku_cold;
 
     sol = solve([eqn1, eqn2, eqn3], [x, y, z]);
     T_h_peltier = double(sol.x);
@@ -91,6 +91,14 @@ for i = 1:length(delta_J_arr)
     fprintf('Coefficient of Performance (COP): %.1f %% \n\n', coefficient_performance);
 
 end
+
+% Display optimal results
+outlet_temp_cold_optimal = inlet_temp_cold + max_cooling_power/(m_dot_air_cold * Cp_air);
+
+fprintf('<strong>===Optimal Results===\n</strong>');
+fprintf('Optimal Current (J_e_max): %.1f A \n', J_optimal);
+fprintf('Max Cooling Power (Q_c_peltier_max): %.2f W\n', max_cooling_power);
+fprintf('Optimal Outlet Air Temp (T_out_min): %.2f K\n', outlet_temp_cold_optimal);
 
 
 %% Plot graph of Cooling power against Current
