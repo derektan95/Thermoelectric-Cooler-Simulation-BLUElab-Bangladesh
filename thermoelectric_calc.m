@@ -3,6 +3,11 @@
 warning('off','all');           % Turn off all warnings
 run("param_thermoelectric_cooling.m");
 
+%% Declare variables as global for use in other scripts (bad practice)
+global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
+global height width Area_cross_sect perimeter Dh
+global R_e_hc R_k_hc
+
 %% Define simulation parameters (move some of these to param_evap_cool.m)
 
 % Initial conditions - Cold Side (CHANGME)
@@ -31,13 +36,16 @@ fprintf('<strong>***Initialization***\n</strong>');
 fprintf('Inlet Air Temperature (T_in): %.3f K \n', inlet_temp_cold);
 fprintf('Inlet Air Speed (U): %.1f m/s \n', air_speed_cold);
 fprintf('Convective Coefficient Resistance (R_ku) - Cold Side: %.3f K/W\n', R_ku_cold);
-fprintf('Convective Coefficient Resistance (R_ku) - Hot Side: %.3f K/W\n\n', R_ku_hot);
+fprintf('Convective Coefficient Resistance (R_ku) - Hot Side: %.3f K/W\n', R_ku_hot);
+fprintf('Conductive Coefficient Resistance (R_k_hc) - Hot Side: %.3f K/W\n\n', R_k_hc);
 
 %% Main Calculation Body
 
 
 
 %% Main Functions Used
+
+
 
 
 
