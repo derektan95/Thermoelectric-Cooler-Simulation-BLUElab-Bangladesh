@@ -58,15 +58,17 @@ T_c_peltier = double(sol.y);
 Q_c_peltier = double(sol.z);
 
 outlet_temp_cold = inlet_temp_cold + Q_c_peltier/(m_dot_air_cold * Cp_air);
-coefficient_performance = -100 * Q_c_peltier / ( 400 * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) ) );
+power_required = 400 * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
+coefficient_performance = -100 * Q_c_peltier / power_required;
 
 
 %% Print results..
 fprintf('<strong>===RESULTS===\n</strong>');
 fprintf('Hot side Temperature (T_h): %.1f K \n', T_h_peltier);
-fprintf('Cold side Temperature (T_h): %.1f K \n', T_c_peltier);
+fprintf('Cold side Temperature (T_c): %.1f K \n', T_c_peltier);
 fprintf('Cooling Power (Q_c_peltier): %.2f W\n', Q_c_peltier);
 fprintf('Outlet Air Temperature (T_out): %.1f K\n', outlet_temp_cold);
+fprintf('Power Required (P_e): %.1f W\n', power_required);
 fprintf('Coefficient of Performance (COP): %.1f %% \n\n', coefficient_performance);
 
 
