@@ -11,7 +11,9 @@ global R_e_hc R_k_hc alpha_seeback num_semi_cond
 %% Define simulation parameters (CHANGME)
 
 % General parameters
-J_e = 0.8;              % Optimal current (CHANGE TO FUNCTION)
+J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
+J_iters = 20;
+J_max = 2.0;
 
 % Initial conditions - Cold Side 
 inlet_temp_cold = 293.15;   % K
@@ -46,32 +48,58 @@ fprintf('Conductive Coefficient Resistance (R_k_hc): %.3f K/W\n\n', R_k_hc);
 
 %% Main Calculation Body
 
-% x = T_h, y = T_c, z = Q_c, 
-syms x y z
-eqn1 = ((x - y) / R_k_hc) + ((x-inlet_temp_hot)/1.515) == (num_semi_cond * alpha_seeback * J_e * x) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
-eqn2 = (-(x - y) / R_k_hc) + z == (-num_semi_cond * alpha_seeback * J_e * y) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
-eqn3 = z == (y - inlet_temp_cold) / 0.4183;
+cooling_power_arr = zeros(J_iters, 1);
+delta_J_arr = linspace(0, J_max, J_iters);
+J_optimal = 0;
+max_cooling_power = 0;
 
-sol = solve([eqn1, eqn2, eqn3], [x, y, z]);
-T_h_peltier = double(sol.x);
-T_c_peltier = double(sol.y);
-Q_c_peltier = double(sol.z);
+for i = 1:length(delta_J_arr)
+    
+    J_e = delta_J_arr(i);
+    
+    % x = T_h, y = T_c, z = Q_c
+    syms x y z
+    eqn1 = ((x - y) / R_k_hc) + ((x-inlet_temp_hot)/1.515) == (num_semi_cond * alpha_seeback * J_e * x) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
+    eqn2 = (-(x - y) / R_k_hc) + z == (-num_semi_cond * alpha_seeback * J_e * y) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
+    eqn3 = z == (y - inlet_temp_cold) / 0.4183;
 
-outlet_temp_cold = inlet_temp_cold + Q_c_peltier/(m_dot_air_cold * Cp_air);
-power_required = 400 * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
-coefficient_performance = -100 * Q_c_peltier / power_required;
+    sol = solve([eqn1, eqn2, eqn3], [x, y, z]);
+    T_h_peltier = double(sol.x);
+    T_c_peltier = double(sol.y);
+    Q_c_peltier = double(sol.z);
+
+    outlet_temp_cold = inlet_temp_cold + Q_c_peltier/(m_dot_air_cold * Cp_air);
+    power_required = 400 * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
+    coefficient_performance = -100 * Q_c_peltier / power_required;
+    
+    cooling_power_arr(i) = Q_c_peltier;
+    
+    % Find optimal current which gives max cooling
+    if -Q_c_peltier > -max_cooling_power
+        max_cooling_power = Q_c_peltier;
+        J_optimal = J_e;
+    end
+    
+    % Print results..
+    fprintf('<strong>===Iteration %d:===\n</strong>', i);
+    fprintf('Input Current (J_e): %.1f A \n', J_e);
+    fprintf('Hot side Temperature (T_h): %.1f K \n', T_h_peltier);
+    fprintf('Cold side Temperature (T_c): %.1f K \n', T_c_peltier);
+    fprintf('Cooling Power (Q_c_peltier): %.2f W\n', Q_c_peltier);
+    fprintf('Outlet Air Temperature (T_out): %.1f K\n', outlet_temp_cold);
+    fprintf('Power Required (P_e): %.1f W\n', power_required);
+    fprintf('Coefficient of Performance (COP): %.1f %% \n\n', coefficient_performance);
+
+end
 
 
-%% Print results..
-fprintf('<strong>===RESULTS===\n</strong>');
-fprintf('Hot side Temperature (T_h): %.1f K \n', T_h_peltier);
-fprintf('Cold side Temperature (T_c): %.1f K \n', T_c_peltier);
-fprintf('Cooling Power (Q_c_peltier): %.2f W\n', Q_c_peltier);
-fprintf('Outlet Air Temperature (T_out): %.1f K\n', outlet_temp_cold);
-fprintf('Power Required (P_e): %.1f W\n', power_required);
-fprintf('Coefficient of Performance (COP): %.1f %% \n\n', coefficient_performance);
+%% Plot graph of Cooling power against Current
 
-
+plot(delta_J_arr, cooling_power_arr);
+title("Cooling Power against Input Current");
+xlabel("Current [A]");
+ylabel("Cooling Power [W]");
+grid on;
 
 
 
