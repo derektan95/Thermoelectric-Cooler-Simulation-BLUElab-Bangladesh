@@ -6,7 +6,7 @@ clc;clear;
 %% Declare variables as global for use in other scripts (bad practice)
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
 global height width Area_cross_sect perimeter Dh
-global R_e_hc R_k_hc
+global R_e_hc R_k_hc alpha_seeback num_semi_cond
 
 %% Properties
 
@@ -21,7 +21,7 @@ rho_air = 1.177;                     % Density (Kg/m^3)
 
 % Table C.9 - Bismuth Telluride Peltier element properties
 alpha_s_pos = 2.3 * 10^-4;           % V/degC
-alpha_s_neg = 2.1 * 10^-4;           % V/degC
+alpha_s_neg = -2.1 * 10^-4;           % V/degC
 rho_e_pos = 10^-5;                   % Ohm-m
 rho_e_neg = rho_e_pos;               % Ohm-m
 k_bismuth_pos = 1.7;                 % W/mK
@@ -30,8 +30,8 @@ width_semi_cond = 0.0015;            % m (Assume square base)
 height_semi_cond = 0.0035;           % m
 num_semi_cond = 400;
 
-alpha_s = alpha_s_pos - alpha_s_neg;
-R_e_hc = (height_semi_cond/width_semi_cond^2) * (rho_e_pos + rho_e_neg);
+alpha_seeback = alpha_s_pos - alpha_s_neg;
+R_e_hc = (height_semi_cond/(width_semi_cond^2)) * (rho_e_pos + rho_e_neg);
 R_k_hc = 1 / ( num_semi_cond * (width_semi_cond^2/height_semi_cond) * (k_bismuth_pos + k_bismuth_neg) );
 
 %% Dimensions of flow channel (between sheets)
