@@ -7,6 +7,8 @@ clc;clear;
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
 global height width Area_cross_sect perimeter Dh
 global R_e_hc R_k_hc alpha_seeback num_semi_cond
+global fin_area_total_cold fin_width_cold 
+global fin_area_total_hot fin_width_hot 
 
 %% Properties
 
@@ -21,7 +23,7 @@ rho_air = 1.177;                     % Density (Kg/m^3)
 
 % Table C.9 - Bismuth Telluride Peltier element properties
 alpha_s_pos = 2.3 * 10^-4;           % V/degC
-alpha_s_neg = -2.1 * 10^-4;           % V/degC
+alpha_s_neg = -2.1 * 10^-4;          % V/degC
 rho_e_pos = 10^-5;                   % Ohm-m
 rho_e_neg = rho_e_pos;               % Ohm-m
 k_bismuth_pos = 1.7;                 % W/mK
@@ -34,6 +36,34 @@ alpha_seeback = alpha_s_pos - alpha_s_neg;
 R_e_hc = (height_semi_cond/(width_semi_cond^2)) * (rho_e_pos + rho_e_neg);
 R_k_hc = 1 / ( num_semi_cond * (width_semi_cond^2/height_semi_cond) * (k_bismuth_pos + k_bismuth_neg) );
 
+%% Dimensions of fins
+
+% Fin conditions - Cold Side       
+fin_width_cold = 0.09;           % length parallel to flow [m]
+fin_length_cold = 0;             % CHANGEME
+fin_thickness_cold = 0;          % CHANGEME
+sink_height_cold = 0;            % CHANGEME
+num_fins_cold = 0;               % CHANGEME
+k_fin_cold = 237;                % Conduction Coeff - Aluminum [W/mK]
+
+per_fin_area_cold = 2 * fin_width_cold * fin_length_cold;
+base_area_cold = (fin_width_cold * sink_height_cold) - (num_fins_cold * fin_width_cold * fin_thickness_cold);  
+% fin_area_total_cold = (num_fins_cold * per_fin_area_cold) + base_area_cold;
+fin_area_total_cold = 0.05;      % Given by prof's example [m^2]
+
+% Fin conditions - Hot Side (ASSUMING 2* BIGGER ON ALL SIDES)     
+fin_width_hot = fin_width_cold*2;                % length parallel to flow [m]
+fin_length_hot = 0;                              % CHANGEME
+fin_thickness_hot = 0;                           % CHANGEME
+sink_height_hot = 0;                             % CHANGEME
+num_fins_hot = 0;                                % CHANGEME
+k_fin_hot = 237;                                 % Conduction Coeff - Aluminum [W/mK]
+    
+per_fin_area_hot = 2 * fin_width_hot * fin_length_hot;                              
+base_area_hot = (fin_width_hot * sink_height_hot) - (num_fins_hot * fin_width_hot * fin_thickness_hot); 
+% fin_area_total_hot = (num_fins_hot * per_fin_area_hot) + base_area_hot;
+fin_area_total_hot = fin_area_total_cold*4;      % Given by prof's example [m^2]  
+
 %% Dimensions of flow channel (between sheets)
 % Box dimension of 0.2m * 0.2m * 0.2m (evaCooler)
 
@@ -41,11 +71,5 @@ width = 0.09;
 height = 0.05;
 Area_cross_sect = height * width;
 perimeter = (2 * height) + (2 * width);
-
 Dh = 4*Area_cross_sect/perimeter; 
 
-%% Peltier thermoelectric cooling
-
-% mass_flow_air = 1 * (0.12^2) * rho_air;
-% outlet_air_temp = 308 - (85 / (mass_flow_air * Cp_air) )
-% deltaT = 308 - outlet_air_temp
