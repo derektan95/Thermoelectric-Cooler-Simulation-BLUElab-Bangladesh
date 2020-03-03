@@ -38,7 +38,7 @@ R_k_hc = 1 / ( num_semi_cond * (width_semi_cond^2/height_semi_cond) * (k_bismuth
 % Box dimension of 0.2m * 0.2m * 0.2m (evaCooler)
 
 width = 0.09;
-height = 0.09;
+height = 0.05;
 Area_cross_sect = height * width;
 perimeter = (2 * height) + (2 * width);
 
