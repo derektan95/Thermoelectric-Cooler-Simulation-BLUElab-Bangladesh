@@ -19,23 +19,21 @@ J_max = 4.0;
 
 % Initial conditions - Cold Side 
 inlet_temp_cold = 308.15;   % K
-air_speed_cold = 1;      % m/s
+air_speed_cold = 2.2;      % m/s
 m_dot_air_cold = Area_cross_sect * rho_air * air_speed_cold;
 
 % Initial conditions - Hot Side 
 inlet_temp_hot = 308.15;   % K
-air_speed_hot = 3.5;      % m/s 
+air_speed_hot = 4.5;      % m/s 
 
-% Compute fin efficiencies
-overall_fin_eff_hot = 1;
-overall_fin_eff_cold = 1;
-
-
-
-%% Compute convective coefficient (resistance)
-
+% Compute convective coefficient & fin efficiencies
 [R_ku_cold, h_cold] = compute_convective_coefficient(air_speed_cold, fin_area_total_cold, fin_width_cold);
 [R_ku_hot, h_hot] = compute_convective_coefficient(air_speed_hot, fin_area_total_hot, fin_width_hot);
+overall_fin_eff_hot = compute_fin_efficiency(h_hot, k_fin_hot, fin_thickness_hot, fin_length_hot, num_fins_hot, per_fin_area_hot, fin_area_total_hot);        
+overall_fin_eff_cold = compute_fin_efficiency(h_cold, k_fin_cold, fin_thickness_cold, fin_length_cold, num_fins_cold, per_fin_area_cold, fin_area_total_cold);        
+
+
+%% Print initialization message
 fprintf('<strong>***Initialization***\n</strong>');
 fprintf('Inlet Air Temperature - Cold Side (T_in_cold): %.3f K \n', inlet_temp_cold);
 fprintf('Inlet Air Speed - Cold Side (U_cold): %.1f m/s \n', air_speed_cold);

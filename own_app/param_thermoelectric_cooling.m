@@ -7,8 +7,8 @@ clc;clear;
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
 global height width Area_cross_sect perimeter Dh
 global R_e_hc R_k_hc alpha_seeback num_semi_cond
-global fin_area_total_cold fin_width_cold 
-global fin_area_total_hot fin_width_hot 
+global fin_width_cold fin_length_cold fin_thickness_cold sink_height_cold num_fins_cold k_fin_cold per_fin_area_cold base_area_cold fin_area_total_cold
+global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_hot k_fin_hot per_fin_area_hot base_area_hot fin_area_total_hot 
 
 %% Properties
 
@@ -39,36 +39,36 @@ R_k_hc = 1 / ( num_semi_cond * (width_semi_cond^2/height_semi_cond) * (k_bismuth
 %% Dimensions of fins
 
 % Fin conditions - Cold Side       
-fin_width_cold = 0.09;           % length parallel to flow [m]
-fin_length_cold = 0;             % CHANGEME
-fin_thickness_cold = 0;          % CHANGEME
-sink_height_cold = 0;            % CHANGEME
-num_fins_cold = 0;               % CHANGEME
+fin_width_cold = 0.045;           % length parallel to flow [m]
+fin_length_cold = 0.021;             % CHANGEME
+fin_thickness_cold = 0.001;          % CHANGEME
+sink_height_cold = 0.04;            % CHANGEME
+num_fins_cold = 9;               % CHANGEME
 k_fin_cold = 237;                % Conduction Coeff - Aluminum [W/mK]
 
 per_fin_area_cold = 2 * fin_width_cold * fin_length_cold;
 base_area_cold = (fin_width_cold * sink_height_cold) - (num_fins_cold * fin_width_cold * fin_thickness_cold);  
-% fin_area_total_cold = (num_fins_cold * per_fin_area_cold) + base_area_cold;
-fin_area_total_cold = 0.05;      % Given by prof's example [m^2]
+fin_area_total_cold = (num_fins_cold * per_fin_area_cold) + base_area_cold;
+% fin_area_total_cold = 0.05;      % Given by prof's example [m^2]
 
 % Fin conditions - Hot Side (ASSUMING 2* BIGGER ON ALL SIDES)     
-fin_width_hot = fin_width_cold*2;                % length parallel to flow [m]
-fin_length_hot = 0;                              % CHANGEME
-fin_thickness_hot = 0;                           % CHANGEME
-sink_height_hot = 0;                             % CHANGEME
-num_fins_hot = 0;                                % CHANGEME
+fin_width_hot = 0.12;                % length parallel to flow [m]
+fin_length_hot = 0.027;                              % CHANGEME
+fin_thickness_hot = 0.001;                           % CHANGEME
+sink_height_hot = 0.08;                             % CHANGEME
+num_fins_hot = 12;                                % CHANGEME
 k_fin_hot = 237;                                 % Conduction Coeff - Aluminum [W/mK]
     
 per_fin_area_hot = 2 * fin_width_hot * fin_length_hot;                              
 base_area_hot = (fin_width_hot * sink_height_hot) - (num_fins_hot * fin_width_hot * fin_thickness_hot); 
-% fin_area_total_hot = (num_fins_hot * per_fin_area_hot) + base_area_hot;
-fin_area_total_hot = fin_area_total_cold*4;      % Given by prof's example [m^2]  
+fin_area_total_hot = (num_fins_hot * per_fin_area_hot) + base_area_hot;
+% fin_area_total_hot = fin_area_total_cold*4;      % Given by prof's example [m^2]  
 
 %% Dimensions of flow channel (between sheets)
-% Box dimension of 0.2m * 0.2m * 0.2m (evaCooler)
+% According to size of heat sink on cold side...
 
-width = 0.09;
-height = 0.05;
+width = sink_height_cold;
+height = fin_length_cold;
 Area_cross_sect = height * width;
 perimeter = (2 * height) + (2 * width);
 Dh = 4*Area_cross_sect/perimeter; 
