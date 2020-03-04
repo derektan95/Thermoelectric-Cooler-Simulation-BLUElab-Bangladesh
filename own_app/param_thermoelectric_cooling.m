@@ -48,7 +48,7 @@ k_fin_cold = 237;                % Conduction Coeff - Aluminum [W/mK]
 
 per_fin_area_cold = 2 * fin_width_cold * fin_length_cold;
 base_area_cold = (fin_width_cold * sink_height_cold) - (num_fins_cold * fin_width_cold * fin_thickness_cold);  
-fin_area_total_cold = (num_fins_cold * per_fin_area_cold) + base_area_cold;
+fin_area_total_cold = ( (num_fins_cold-1) * per_fin_area_cold) + base_area_cold;
 % fin_area_total_cold = 0.05;      % Given by prof's example [m^2]
 
 % Fin conditions - Hot Side (ASSUMING 2* BIGGER ON ALL SIDES)     
@@ -61,7 +61,7 @@ k_fin_hot = 237;                                 % Conduction Coeff - Aluminum [
     
 per_fin_area_hot = 2 * fin_width_hot * fin_length_hot;                              
 base_area_hot = (fin_width_hot * sink_height_hot) - (num_fins_hot * fin_width_hot * fin_thickness_hot); 
-fin_area_total_hot = (num_fins_hot * per_fin_area_hot) + base_area_hot;
+fin_area_total_hot = ( (num_fins_hot-1) * per_fin_area_hot) + base_area_hot;
 % fin_area_total_hot = fin_area_total_cold*4;      % Given by prof's example [m^2]  
 
 %% Dimensions of flow channel (between sheets)
