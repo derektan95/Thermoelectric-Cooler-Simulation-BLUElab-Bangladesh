@@ -6,13 +6,10 @@ run("param_thermoelectric_cooling.m");
 
 %% Declare variables as global for use in other scripts (bad practice)
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
-global height width Area_cross_sect perimeter Dh
+global Area_cross_sect_cold Dh_cold
 global R_e_hc R_k_hc alpha_seeback num_semi_cond
 global fin_width_cold fin_length_cold fin_thickness_cold sink_height_cold num_fins_cold k_fin_cold per_fin_area_cold base_area_cold fin_area_total_cold
 global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_hot k_fin_hot per_fin_area_hot base_area_hot fin_area_total_hot 
-
-%% Define data structure for use
-
 
 %% Define simulation parameters (CHANGME)
 
@@ -21,19 +18,22 @@ J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
 J_iters = 20;
 J_max = 4.0;
 
-% Initial conditions - Cold Side 
+% Initial conditions - Cold Side (Air restricted to channel)
 inlet_temp_cold = 308.15;   % K
 air_speed_cold = 2.2;      % m/s
-m_dot_air_cold = Area_cross_sect * rho_air * air_speed_cold;
+m_dot_air_cold = Area_cross_sect_cold * rho_air * air_speed_cold;
 
-% Initial conditions - Hot Side 
+% Initial conditions - Hot Side (Air not restricted to channel)
 inlet_temp_hot = 308.15;   % K
-air_speed_hot = 4.5;      % m/s 
-m_dot_air_hot = (sink_height_hot * fin_length_hot) * rho_air * air_speed_hot;
+CFM_fan_hot = 48;              % CubicFt/min
+volumetric_flow_rate_hot = CFM_fan_hot * ((0.3048^3) / 60);   % m^3/s - conversion factor
+m_dot_air_hot = volumetric_flow_rate_hot / rho_air;
+fan_area = pi * 0.04^2;
+air_speed_hot = volumetric_flow_rate_hot / fan_area ;         % m/s
 
 % Compute convective coefficient & fin efficiencies
-[R_ku_cold, h_cold] = compute_convective_coefficient(air_speed_cold, fin_area_total_cold, fin_width_cold);
-[R_ku_hot, h_hot] = compute_convective_coefficient(air_speed_hot, fin_area_total_hot, fin_width_hot);
+[R_ku_cold, h_cold] = compute_convective_coefficient_cold_NTU(air_speed_cold, fin_area_total_cold, fin_width_cold, Dh_cold, m_dot_air_cold);
+[R_ku_hot, h_hot] = compute_convective_coefficient_hot_without_NTU(air_speed_hot, fin_area_total_hot, fin_width_hot);
 overall_fin_eff_hot = compute_fin_efficiency(h_hot, k_fin_hot, fin_thickness_hot, fin_length_hot, num_fins_hot, per_fin_area_hot, fin_area_total_hot);        
 overall_fin_eff_cold = compute_fin_efficiency(h_cold, k_fin_cold, fin_thickness_cold, fin_length_cold, num_fins_cold, per_fin_area_cold, fin_area_total_cold);        
 
@@ -148,16 +148,31 @@ grid on;
 
 
 % Assuming flow over plate (Likely laminar Re < 5 * 10^5)
-function [R_ku, h] = compute_convective_coefficient(air_speed, Area_fin_total, fin_width)
+function [R_ku, h] = compute_convective_coefficient_cold_NTU(air_speed, Area_fin_total, fin_width, Dh, mass_dot)
+    
+    global kin_visc_air k_air Pr_air Cp_air;
+
+    Re = (air_speed * fin_width)/kin_visc_air;
+    Nu = 0.664 * Re^(0.5) * Pr_air^(1/3);
+    NTU = (Area_fin_total * Nu * k_air) / (Dh * mass_dot * Cp_air);
+    heat_transfer_eff = 1 - exp(-NTU);                      % R changes with flow in channel...
+    R_ku = 1 / (mass_dot * Cp_air * heat_transfer_eff);     % Average convective resistance
+    h = 1 / (R_ku * Area_fin_total);                        % R = 1/hA
+    
+%     R_ku = fin_width/(Area_fin_total * Nu * k_air); 
+%     h = Nu * k_air / fin_width;
+
+end
+
+% Assuming flow over plate (Likely laminar Re < 5 * 10^5)
+function [R_ku, h] = compute_convective_coefficient_hot_without_NTU(air_speed, Area_fin_total, fin_width)
     
     global kin_visc_air k_air Pr_air;
 
     Re = (air_speed * fin_width)/kin_visc_air;
-    Nu = 0.664 * Re^(0.5) * Pr_air^(1/3);
+    Nu = 0.664 * Re^(0.5) * Pr_air^(1/3);    
     R_ku = fin_width/(Area_fin_total * Nu * k_air); 
     h = Nu * k_air / fin_width;
-%     Nu = 0.023 * Re^(4/5) * Pr_air^(0.3);       % n = 0.3
-%     R_ku = Dh/(Area_water_contact * Nu * k_air);     
 
 end
 

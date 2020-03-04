@@ -5,7 +5,7 @@ clc;clear;
 
 %% Declare variables as global for use in other scripts (bad practice)
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
-global height width Area_cross_sect perimeter Dh
+global Area_cross_sect_cold Dh_cold
 global R_e_hc R_k_hc alpha_seeback num_semi_cond
 global fin_width_cold fin_length_cold fin_thickness_cold sink_height_cold num_fins_cold k_fin_cold per_fin_area_cold base_area_cold fin_area_total_cold
 global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_hot k_fin_hot per_fin_area_hot base_area_hot fin_area_total_hot 
@@ -69,7 +69,7 @@ fin_area_total_hot = ( (num_fins_hot-1) * per_fin_area_hot) + base_area_hot;
 
 width = sink_height_cold;
 height = fin_length_cold;
-Area_cross_sect = height * width;
+Area_cross_sect_cold = height * width;
 perimeter = (2 * height) + (2 * width);
-Dh = 4*Area_cross_sect/perimeter; 
+Dh_cold = 4*Area_cross_sect_cold/perimeter; 
 
