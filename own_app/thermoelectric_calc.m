@@ -1,4 +1,5 @@
 %% Load essential parameters
+% Implement struct data structure in the future!
 
 % warning('off','all');           % Turn off all warnings
 run("param_thermoelectric_cooling.m");
@@ -7,8 +8,8 @@ run("param_thermoelectric_cooling.m");
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
 global height width Area_cross_sect perimeter Dh
 global R_e_hc R_k_hc alpha_seeback num_semi_cond
-global fin_area_total_cold fin_width_cold 
-global fin_area_total_hot fin_width_hot 
+global fin_width_cold fin_length_cold fin_thickness_cold sink_height_cold num_fins_cold k_fin_cold per_fin_area_cold base_area_cold fin_area_total_cold
+global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_hot k_fin_hot per_fin_area_hot base_area_hot fin_area_total_hot 
 
 %% Define simulation parameters (CHANGME)
 
@@ -25,6 +26,7 @@ m_dot_air_cold = Area_cross_sect * rho_air * air_speed_cold;
 % Initial conditions - Hot Side 
 inlet_temp_hot = 308.15;   % K
 air_speed_hot = 4.5;      % m/s 
+m_dot_air_hot = (sink_height_hot * fin_length_hot) * rho_air * air_speed_hot;
 
 % Compute convective coefficient & fin efficiencies
 [R_ku_cold, h_cold] = compute_convective_coefficient(air_speed_cold, fin_area_total_cold, fin_width_cold);
@@ -53,6 +55,8 @@ T_h_optimal = 0;
 T_c_optimal = 0;
 power_required_optimal = 0;
 COP_optimal = 0;
+outlet_temp_cold_optimal = 0;
+outlet_temp_hot_optimal = 0;
 
 for i = 1:length(delta_J_arr)
     
@@ -69,9 +73,11 @@ for i = 1:length(delta_J_arr)
     T_c_peltier = double(sol.y);
     Q_c_peltier = double(sol.z);
     
+    Q_h_peltier = (inlet_temp_hot - T_h_peltier) / R_ku_hot;
     power_conduction_peltier = (T_h_peltier - T_c_peltier) / R_k_hc;
     outlet_temp_cold = inlet_temp_cold + Q_c_peltier/(m_dot_air_cold * Cp_air);
-    power_required = 400 * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
+    outlet_temp_hot = inlet_temp_hot - Q_h_peltier/(m_dot_air_hot * Cp_air);
+    power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
     coefficient_performance = -100 * Q_c_peltier / power_required;
     
     cooling_power_arr(i) = Q_c_peltier;
@@ -79,36 +85,52 @@ for i = 1:length(delta_J_arr)
     % Find optimal current which gives max cooling
     if -Q_c_peltier > -max_cooling_power
         max_cooling_power = Q_c_peltier;
+        max_heating_power = Q_h_peltier;
         J_optimal = J_e;
         T_h_optimal = T_h_peltier;
         T_c_optimal = T_c_peltier;
         power_required_optimal = power_required;
         COP_optimal = coefficient_performance;
+        outlet_temp_cold_optimal = outlet_temp_cold;
+        outlet_temp_hot_optimal = outlet_temp_hot;
     end
     
     % Print results..
     fprintf('<strong>===Iteration %d===\n</strong>', i);
     fprintf('Input Current (J_e): %.1f A \n', J_e);
-    fprintf('Hot side Temperature (T_h): %.1f K \n', T_h_peltier);
-    fprintf('Cold side Temperature (T_c): %.1f K \n', T_c_peltier);
-    fprintf('Cooling Power (Q_c_peltier): %.2f W\n', Q_c_peltier);
-    fprintf('Outlet Air Temperature (T_out): %.1f K\n', outlet_temp_cold);
     fprintf('Power Required (P_e): %.1f W\n', power_required);
-    fprintf('Coefficient of Performance (COP): %.1f %% \n\n', coefficient_performance);
+    fprintf('Coefficient of Performance (COP): %.1f %% \n', coefficient_performance);
+    
+    % Cold side
+    fprintf('Cold side Temperature (T_c): %.1f K \n', T_c_peltier);
+    fprintf('Cooling Power - Cold Side (Q_c_peltier): %.2f W\n', Q_c_peltier);
+    fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.1f K\n', outlet_temp_cold);
+    
+    % Hot side
+    fprintf('Hot side Temperature (T_h): %.1f K \n', T_h_peltier);
+    fprintf('Heating Power - Hot Side (Q_h_peltier): %.2f W\n', Q_h_peltier);
+    fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp_hot);
 
 end
 
 % Display optimal results
-outlet_temp_cold_optimal = inlet_temp_cold + max_cooling_power/(m_dot_air_cold * Cp_air);
+% outlet_temp_cold_optimal = inlet_temp_cold + max_cooling_power/(m_dot_air_cold * Cp_air);
 
 fprintf('<strong>===Optimal Results===\n</strong>');
-fprintf('Optimal Current (J_e_max): %.1f A \n', J_optimal);
-fprintf('Hot side Temperature (T_h): %.1f K \n', T_h_optimal);
+
+fprintf('Input Current (J_e): %.1f A \n', J_optimal);
+fprintf('Power Required (P_e): %.1f W\n', power_required_optimal);
+fprintf('Coefficient of Performance (COP): %.1f %% \n', COP_optimal);
+
+% Cold side
 fprintf('Cold side Temperature (T_c): %.1f K \n', T_c_optimal);
-fprintf('Max Cooling Power (Q_c_peltier_max): %.2f W\n', max_cooling_power);
-fprintf('Optimal Outlet Air Temp (T_out_min): %.2f K\n', outlet_temp_cold_optimal);
-fprintf('Power Required (P_e_opt): %.1f W\n', power_required_optimal);
-fprintf('Coefficient of Performance (COP_opt): %.1f %% \n\n', COP_optimal);
+fprintf('Cooling Power - Cold Side (Q_c_peltier): %.2f W\n', max_cooling_power);
+fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.1f K\n', outlet_temp_cold_optimal);
+
+% Hot side
+fprintf('Hot side Temperature (T_h): %.1f K \n', T_h_optimal);
+fprintf('Heating Power - Hot Side (Q_h_peltier): %.2f W\n', max_heating_power);
+fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp_hot_optimal);
 
 
 %% Plot graph of Cooling power against Current

@@ -69,7 +69,7 @@ for i = 1:length(delta_J_arr)
     Q_c_peltier = double(sol.z);
 
     outlet_temp_cold = inlet_temp_cold + Q_c_peltier/(m_dot_air_cold * Cp_air);
-    power_required = 400 * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
+    power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
     coefficient_performance = -100 * Q_c_peltier / power_required;
     
     cooling_power_arr(i) = Q_c_peltier;
