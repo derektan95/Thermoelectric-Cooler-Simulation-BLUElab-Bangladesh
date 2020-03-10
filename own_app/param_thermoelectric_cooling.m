@@ -5,7 +5,7 @@ clc;clear;
 
 %% Declare variables as global for use in other scripts (bad practice)
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
-global Area_cross_sect_cold Dh_cold
+global Area_cross_sect_cold_per_channel Dh_cold_per_channel num_channels area_per_channel
 global R_e_hc R_k_hc alpha_seeback num_semi_cond
 global fin_width_cold fin_length_cold fin_thickness_cold sink_height_cold num_fins_cold k_fin_cold per_fin_area_cold base_area_cold fin_area_total_cold
 global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_hot k_fin_hot per_fin_area_hot base_area_hot fin_area_total_hot 
@@ -68,9 +68,13 @@ fin_area_total_hot = ( (num_fins_hot-1) * per_fin_area_hot) + base_area_hot;
 % According to size of heat sink on cold side... (account for area covered
 % by fins)
 
-width = sink_height_cold;
+% width = sink_height_cold;
 height = fin_length_cold;
-Area_cross_sect_cold = (height * width) - (num_fins_cold * fin_length_cold * fin_thickness_cold);
-perimeter = (2 * height) + (2 * width);
-Dh_cold = 4*Area_cross_sect_cold/perimeter; 
+num_channels = num_fins_cold - 1;
+width_btwn_fins = (sink_height_cold - (num_fins_cold * fin_thickness_cold) )/num_channels;
+Area_cross_sect_cold_per_channel = (height * width_btwn_fins);
+perimeter = (2 * height) + (2 * width_btwn_fins);
+Dh_cold_per_channel = 4*Area_cross_sect_cold_per_channel/perimeter; 
+
+area_per_channel = fin_area_total_cold / num_channels;
 

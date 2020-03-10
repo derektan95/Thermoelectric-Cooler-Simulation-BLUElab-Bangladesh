@@ -6,7 +6,7 @@ run("param_thermoelectric_cooling.m");
 
 %% Declare variables as global for use in other scripts (bad practice)
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
-global Area_cross_sect_cold Dh_cold
+global Area_cross_sect_cold_per_channel Dh_cold_per_channel num_channels area_per_channel
 global R_e_hc R_k_hc alpha_seeback num_semi_cond
 global fin_width_cold fin_length_cold fin_thickness_cold sink_height_cold num_fins_cold k_fin_cold per_fin_area_cold base_area_cold fin_area_total_cold
 global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_hot k_fin_hot per_fin_area_hot base_area_hot fin_area_total_hot 
@@ -21,7 +21,7 @@ J_max = 4.0;
 % Initial conditions - Cold Side (Air restricted to channel)
 inlet_temp_cold = 308.15;   % K
 air_speed_cold = 2.2;      % m/s
-m_dot_air_cold = Area_cross_sect_cold * rho_air * air_speed_cold;
+m_dot_air_cold_per_channel = Area_cross_sect_cold_per_channel * rho_air * air_speed_cold;
 
 % Initial conditions - Hot Side (Air not restricted to channel)
 inlet_temp_hot = 308.15;   % K
@@ -32,7 +32,7 @@ fan_area = pi * 0.04^2;
 air_speed_hot = volumetric_flow_rate_hot / fan_area ;         % m/s
 
 % Compute convective coefficient & fin efficiencies
-[R_ku_cold, h_cold] = compute_convective_coefficient_cold_NTU(air_speed_cold, fin_area_total_cold, fin_width_cold, Dh_cold, m_dot_air_cold);
+[R_ku_cold, h_cold] = compute_convective_coefficient_cold_NTU(air_speed_cold, area_per_channel, fin_width_cold, Dh_cold_per_channel, m_dot_air_cold_per_channel);
 [R_ku_hot, h_hot] = compute_convective_coefficient_hot_without_NTU(air_speed_hot, fin_area_total_hot, fin_width_hot);
 overall_fin_eff_hot = compute_fin_efficiency(h_hot, k_fin_hot, fin_thickness_hot, fin_length_hot, num_fins_hot, per_fin_area_hot, fin_area_total_hot);        
 overall_fin_eff_cold = compute_fin_efficiency(h_cold, k_fin_cold, fin_thickness_cold, fin_length_cold, num_fins_cold, per_fin_area_cold, fin_area_total_cold);        
@@ -79,7 +79,7 @@ for i = 1:length(delta_J_arr)
     
     Q_h_peltier = (T_h_peltier - inlet_temp_hot) / R_ku_hot;
     power_conduction_peltier = (T_h_peltier - T_c_peltier) / R_k_hc;
-    outlet_temp_cold = inlet_temp_cold + Q_c_peltier/(m_dot_air_cold * Cp_air);
+    outlet_temp_cold = inlet_temp_cold + ( (Q_c_peltier/num_channels) / (m_dot_air_cold_per_channel * Cp_air) );
     outlet_temp_hot = inlet_temp_hot + Q_h_peltier/(m_dot_air_hot * Cp_air);
     power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
     coefficient_performance = -100 * Q_c_peltier / power_required;
