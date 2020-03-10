@@ -13,10 +13,17 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 
 %% Define simulation parameters (CHANGME)
 
+% To iterate
+fin_width = 0.045;          % Original short fin width
+fin_width_iters = 100;
+fin_width_max = 0.45;       % 10 times the length
+
+fin_length = 0.021;
+fin_length_iters = 100;
+fin_length_max = 0.21;       % 10 times the length
+
 % General parameters
-J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
-J_iters = 30;
-J_max = 4.0;
+J_e = 0.93;   
 
 % Initial conditions - Cold Side (Air restricted to channel)
 inlet_temp_cold = 308.15;   % K
@@ -31,12 +38,6 @@ m_dot_air_hot = volumetric_flow_rate_hot / rho_air;
 fan_area = pi * 0.04^2;
 air_speed_hot = volumetric_flow_rate_hot / fan_area ;         % m/s
 
-% Compute convective coefficient & fin efficiencies
-[R_ku_cold, h_cold] = compute_convective_coefficient_cold_NTU(air_speed_cold, area_per_channel, fin_width_cold, Dh_cold_per_channel, m_dot_air_cold_per_channel);
-[R_ku_hot, h_hot] = compute_convective_coefficient_hot_without_NTU(air_speed_hot, fin_area_total_hot, fin_width_hot);
-overall_fin_eff_hot = compute_fin_efficiency(h_hot, k_fin_hot, fin_thickness_hot, fin_length_hot, num_fins_hot, per_fin_area_hot, fin_area_total_hot);        
-overall_fin_eff_cold = compute_fin_efficiency(h_cold, k_fin_cold, fin_thickness_cold, fin_length_cold, num_fins_cold, per_fin_area_cold, fin_area_total_cold);        
-
 
 %% Print initialization message
 fprintf('<strong>***Initialization***\n</strong>');
@@ -44,15 +45,17 @@ fprintf('Inlet Air Temperature - Cold Side (T_in_cold): %.3f K \n', inlet_temp_c
 fprintf('Inlet Air Speed - Cold Side (U_cold): %.1f m/s \n', air_speed_cold);
 fprintf('Inlet Air Temperature - Hot Side (T_in_hot): %.3f K \n', inlet_temp_hot);
 fprintf('Inlet Air Speed - Hot Side (U_hot): %.1f m/s \n', air_speed_hot);
-fprintf('Convective Coefficient Resistance PER CHANNEL (R_ku_c) - Cold Side: %.3f K/W\n', R_ku_cold);
-fprintf('Convective Coefficient Resistance (R_ku_h) - Hot Side: %.3f K/W\n', R_ku_hot);
-fprintf('Conductive Coefficient Resistance (R_k_hc): %.3f K/W\n\n', R_k_hc);
+% fprintf('Convective Coefficient Resistance PER CHANNEL (R_ku_c) - Cold Side: %.3f K/W\n', R_ku_cold);
+% fprintf('Convective Coefficient Resistance (R_ku_h) - Hot Side: %.3f K/W\n', R_ku_hot);
+% fprintf('Conductive Coefficient Resistance (R_k_hc): %.3f K/W\n\n', R_k_hc);
 
 %% Main Calculation Body
 
-cooling_power_arr = zeros(J_iters, 1);
-power_required_arr = zeros(J_iters, 1);
-delta_J_arr = linspace(0, J_max, J_iters);
+% delta_fin_width_arr = linspace(fin_width, fin_width_max, fin_width_iters);
+delta_fin_length_arr = linspace(fin_length, fin_length_max, fin_length_iters);
+
+cooling_power_arr = zeros(fin_width_iters, 1);
+power_required_arr = zeros(fin_width_iters, 1);
 J_optimal = 0;
 max_cooling_power = 0;
 T_h_optimal = 0;
@@ -62,9 +65,37 @@ COP_optimal = 0;
 outlet_temp_cold_optimal = 0;
 outlet_temp_hot_optimal = 0;
 
-for i = 1:length(delta_J_arr)
+for i = 1:length(delta_fin_length_arr)
     
-    J_e = delta_J_arr(i);
+    % Redefine fin conditions - Cold Side       
+    fin_width_cold = 0.045;           % length parallel to flow [m]
+    fin_length_cold = delta_fin_length_arr(i);             % CHANGEME
+    fin_thickness_cold = 0.001;          % CHANGEME
+    sink_height_cold = 0.04;            % CHANGEME
+    num_fins_cold = 9;               % CHANGEME
+    k_fin_cold = 237;                % Conduction Coeff - Aluminum [W/mK]
+
+    per_fin_area_cold = 2 * fin_width_cold * fin_length_cold;
+    base_area_cold = (fin_width_cold * sink_height_cold) - (num_fins_cold * fin_width_cold * fin_thickness_cold);  
+    fin_area_total_cold = ( (num_fins_cold-1) * per_fin_area_cold) + base_area_cold;
+    
+    % Calculate flow channel
+    height = fin_length_cold;
+    num_channels = num_fins_cold - 1;
+    width_btwn_fins = (sink_height_cold - (num_fins_cold * fin_thickness_cold) )/num_channels;
+    Area_cross_sect_cold_per_channel = (height * width_btwn_fins);
+    perimeter_per_channel = (2 * height) + (2 * width_btwn_fins);
+    Dh_cold_per_channel = 4*Area_cross_sect_cold_per_channel/perimeter_per_channel; 
+
+    area_per_channel = fin_area_total_cold / num_channels;
+ 
+    % Compute convective coefficient & fin efficiencies
+    [R_ku_cold, h_cold] = compute_convective_coefficient_cold_NTU(air_speed_cold, area_per_channel, fin_width_cold, Dh_cold_per_channel, m_dot_air_cold_per_channel);
+    [R_ku_hot, h_hot] = compute_convective_coefficient_hot_without_NTU(air_speed_hot, fin_area_total_hot, fin_width_hot);
+    overall_fin_eff_hot = compute_fin_efficiency(h_hot, k_fin_hot, fin_thickness_hot, fin_length_hot, num_fins_hot, per_fin_area_hot, fin_area_total_hot);        
+    overall_fin_eff_cold = compute_fin_efficiency(h_cold, k_fin_cold, fin_thickness_cold, fin_length_cold, num_fins_cold, per_fin_area_cold, fin_area_total_cold);        
+
+    
     
     % x = T_h, y = T_c, z = Q_c
     syms x y z
@@ -145,22 +176,29 @@ fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp
 %% Plot final graphs
 
 % Plot graph of Cooling power against Current
+% figure(1)
+% plot(delta_fin_width_arr, cooling_power_arr);
+% title("Cooling Power against Fin Width");
+% xlabel("Fin Width [m]");
+% ylabel("Cooling Power [W]");
+% grid on;
+
 figure(1)
-plot(delta_J_arr, cooling_power_arr);
-title("Cooling Power against Input Current");
-xlabel("Current [A]");
+plot(delta_fin_length_arr, cooling_power_arr);
+title("Cooling Power against Fin Length");
+xlabel("Fin Length [m]");
 ylabel("Cooling Power [W]");
 grid on;
 
 % Plot abs cooling power and power consumption against current
-hold on;
-figure(2)
-plot(delta_J_arr, -cooling_power_arr, delta_J_arr, power_required_arr);
-title("Absolute Cooling Power and Power Consumption against Input Current");
-xlabel("Current [A]");
-ylabel("Power [W]");
-legend("Cooling Power", "Power Consumed", "Location", "NorthEast");
-grid on;
+% hold on;
+% figure(2)
+% plot(delta_fin_length_arr, -cooling_power_arr, delta_fin_length_arr, power_required_arr);
+% title("Absolute Cooling Power and Power Consumption against Fin Length");
+% xlabel("Fin Length [m]");
+% ylabel("Power [W]");
+% legend("Cooling Power", "Power Consumed", "Location", "NorthEast");
+% grid on;
 
 %% Main Functions Used
 
