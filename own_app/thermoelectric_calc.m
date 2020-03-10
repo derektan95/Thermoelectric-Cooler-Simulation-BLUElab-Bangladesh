@@ -75,13 +75,16 @@ for i = 1:length(delta_J_arr)
     sol = solve([eqn1, eqn2, eqn3], [x, y, z]);
     T_h_peltier = double(sol.x);
     T_c_peltier = double(sol.y);
-    Q_c_peltier = double(sol.z);
+    Q_c_peltier_per_channel = double(sol.z);
     
     Q_h_peltier = (T_h_peltier - inlet_temp_hot) / R_ku_hot;
     power_conduction_peltier = (T_h_peltier - T_c_peltier) / R_k_hc;
-    outlet_temp_cold = inlet_temp_cold + ( (Q_c_peltier/num_channels) / (m_dot_air_cold_per_channel * Cp_air) );
+    outlet_temp_cold = inlet_temp_cold + ( (Q_c_peltier_per_channel) / (m_dot_air_cold_per_channel * Cp_air) );
     outlet_temp_hot = inlet_temp_hot + Q_h_peltier/(m_dot_air_hot * Cp_air);
     power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
+    
+    % Compute total cooling power from all channels...
+    Q_c_peltier = Q_c_peltier_per_channel * num_channels;
     coefficient_performance = -100 * Q_c_peltier / power_required;
     
     cooling_power_arr(i) = Q_c_peltier;
@@ -166,6 +169,7 @@ grid on;
 
 
 % Forced convection - Re > 2300 = turbulent flow
+% Calculations is per channel...
 function [R_ku, h] = compute_convective_coefficient_cold_NTU(air_speed, Area_fin_total, fin_width, Dh, mass_dot)
     
     global kin_visc_air k_air Pr_air Cp_air;

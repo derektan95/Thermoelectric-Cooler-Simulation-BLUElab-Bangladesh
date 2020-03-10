@@ -73,8 +73,8 @@ height = fin_length_cold;
 num_channels = num_fins_cold - 1;
 width_btwn_fins = (sink_height_cold - (num_fins_cold * fin_thickness_cold) )/num_channels;
 Area_cross_sect_cold_per_channel = (height * width_btwn_fins);
-perimeter = (2 * height) + (2 * width_btwn_fins);
-Dh_cold_per_channel = 4*Area_cross_sect_cold_per_channel/perimeter; 
+perimeter_per_channel = (2 * height) + (2 * width_btwn_fins);
+Dh_cold_per_channel = 4*Area_cross_sect_cold_per_channel/perimeter_per_channel; 
 
 area_per_channel = fin_area_total_cold / num_channels;
 
