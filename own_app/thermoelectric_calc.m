@@ -171,7 +171,8 @@ function [R_ku, h] = compute_convective_coefficient_cold_NTU(air_speed, Area_fin
     NTU = (Area_fin_total * Nu * k_air) / (fin_width * mass_dot * Cp_air);
     heat_transfer_eff = 1 - exp(-NTU);                      % R changes with flow in channel...
     R_ku = 1 / (mass_dot * Cp_air * heat_transfer_eff);     % Average convective resistance
-    h = 1 / (R_ku * Area_fin_total);                        % R = 1/hA
+%     h = 1 / (R_ku * Area_fin_total);                        % R = 1/hA
+    h = Nu * k_air / fin_width;
     
 %     R_ku = fin_width/(Area_fin_total * Nu * k_air); 
 %     h = Nu * k_air / fin_width;

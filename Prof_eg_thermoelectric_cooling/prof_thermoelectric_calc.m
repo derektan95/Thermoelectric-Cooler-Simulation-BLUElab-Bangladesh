@@ -59,8 +59,8 @@ for i = 1:length(delta_J_arr)
     
     % x = T_h, y = T_c, z = Q_c
     syms x y z
-    eqn1 = ((x - y) / R_k_hc) + ((x-inlet_temp_hot) / 1.515) == (num_semi_cond * alpha_seeback * J_e * x) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
-    eqn2 = (-(x - y) / R_k_hc) + z == (-num_semi_cond * alpha_seeback * J_e * y) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
+    eqn1 = ((x - y) / 1.235) + ((x-inlet_temp_hot) / 1.515) == (num_semi_cond * alpha_seeback * J_e * x) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
+    eqn2 = (-(x - y) / 1.235) + z == (-num_semi_cond * alpha_seeback * J_e * y) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
     eqn3 = z == (y - inlet_temp_cold) / 0.4183;
 
     sol = solve([eqn1, eqn2, eqn3], [x, y, z]);
