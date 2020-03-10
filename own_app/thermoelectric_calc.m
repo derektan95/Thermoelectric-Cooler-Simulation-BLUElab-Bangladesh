@@ -77,10 +77,10 @@ for i = 1:length(delta_J_arr)
     T_c_peltier = double(sol.y);
     Q_c_peltier = double(sol.z);
     
-    Q_h_peltier = (inlet_temp_hot - T_h_peltier) / R_ku_hot;
+    Q_h_peltier = (T_h_peltier - inlet_temp_hot) / R_ku_hot;
     power_conduction_peltier = (T_h_peltier - T_c_peltier) / R_k_hc;
     outlet_temp_cold = inlet_temp_cold + Q_c_peltier/(m_dot_air_cold * Cp_air);
-    outlet_temp_hot = inlet_temp_hot - Q_h_peltier/(m_dot_air_hot * Cp_air);
+    outlet_temp_hot = inlet_temp_hot + Q_h_peltier/(m_dot_air_hot * Cp_air);
     power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
     coefficient_performance = -100 * Q_c_peltier / power_required;
     
@@ -165,19 +165,20 @@ grid on;
 %% Main Functions Used
 
 
-% Assuming flow over plate (Likely laminar Re < 5 * 10^5)
+% Forced convection - Re > 2300 = turbulent flow
 function [R_ku, h] = compute_convective_coefficient_cold_NTU(air_speed, Area_fin_total, fin_width, Dh, mass_dot)
     
     global kin_visc_air k_air Pr_air Cp_air;
-
-    Re = (air_speed * fin_width)/kin_visc_air;
-    Nu = 0.664 * Re^(0.5) * Pr_air^(1/3);
-    NTU = (Area_fin_total * Nu * k_air) / (fin_width * mass_dot * Cp_air);
+    Re = (air_speed * Dh)/kin_visc_air;
+    Nu = 0.023 * Re^(4/5) * Pr_air^(0.3);       % n = 0.3
+    NTU = (Area_fin_total * Nu * k_air) / (Dh * mass_dot * Cp_air);
     heat_transfer_eff = 1 - exp(-NTU);                      % R changes with flow in channel...
     R_ku = 1 / (mass_dot * Cp_air * heat_transfer_eff);     % Average convective resistance
 %     h = 1 / (R_ku * Area_fin_total);                        % R = 1/hA
-    h = Nu * k_air / fin_width;
+    h = Nu * k_air / Dh;
     
+%     Re = (air_speed * fin_width)/kin_visc_air;
+%     Nu = 0.664 * Re^(0.5) * Pr_air^(1/3);
 %     R_ku = fin_width/(Area_fin_total * Nu * k_air); 
 %     h = Nu * k_air / fin_width;
 
