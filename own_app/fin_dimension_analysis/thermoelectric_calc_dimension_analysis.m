@@ -11,22 +11,22 @@ global R_e_hc R_k_hc alpha_seeback num_semi_cond
 global fin_width_cold fin_length_cold fin_thickness_cold sink_height_cold num_fins_cold k_fin_cold per_fin_area_cold base_area_cold fin_area_total_cold
 global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_hot k_fin_hot per_fin_area_hot base_area_hot fin_area_total_hot 
 
-%% Define simulation parameters (CHANGME)
+%% Define simulation parameters (CHANGEME)
 
 % % To iterate fin Width
 % fin_width = 0.045;          % Original short fin width
-% fin_width_iters = 100;
+% fin_iters = 100;
 % fin_width_max = 0.45;       % 10 times the length
 % 
-% % % To iterate fin Length
+% % To iterate fin Length
 % fin_length = 0.021;
-% fin_length_iters = 100;
+% fin_iters = 100;
 % fin_length_max = 0.21;       % 10 times the length
 %
-% % To iterate sink height
+% To iterate sink height
 sink_height_extra_channels = 0;
-sink_height_extra_channels_iters = 100;
-sink_height_extra_channels_max = 100;       % 10 times the length
+fin_iters = 200;
+sink_height_extra_channels_max = 200;       % 10 times the length
 
 
 % General parameters
@@ -35,7 +35,9 @@ J_e = 0.93;
 % Initial conditions - Cold Side (Air restricted to channel)
 inlet_temp_cold = 308.15;   % K
 % air_speed_cold = 2.2;      % m/s
-CFM_fan_cold = 5.8579;                                         % CubicFt/min
+CFM_nominal_cold = 5.8579;                           % Nominal from specsheet
+input_voltage_adjust_factor = 1.93;                                % Divide CFM by voltage divident
+CFM_fan_cold = CFM_nominal_cold / input_voltage_adjust_factor;       % CubicFt/min (CFM_max = 5.8579)
 volumetric_flow_rate_cold = CFM_fan_cold * ((0.3048^3) / 60);   % m^3/s - conversion factor
 m_dot_air_cold = volumetric_flow_rate_cold / rho_air;
 % fan_area_cold = pi * 0.02^2;                                   % CHANGEME
@@ -62,13 +64,17 @@ fprintf('Inlet Air Temperature - Hot Side (T_in_hot): %.3f K \n', inlet_temp_hot
 
 %% Main Calculation Body
 
-% delta_fin_width_arr = linspace(fin_width, fin_width_max, fin_width_iters);
-% delta_fin_length_arr = linspace(fin_length, fin_length_max, fin_length_iters);
-delta_sink_height_extra_channels_arr = linspace(sink_height_extra_channels, sink_height_extra_channels_max, sink_height_extra_channels_iters);
+% CHANGEME
+% delta_fin_width_arr = linspace(fin_width, fin_width_max, fin_iters);
+% delta_fin_length_arr = linspace(fin_length, fin_length_max, fin_iters);
+delta_sink_height_extra_channels_arr = linspace(sink_height_extra_channels, sink_height_extra_channels_max, fin_iters);
 
-outlet_temp_arr = zeros(sink_height_extra_channels_max, 1);
-cooling_power_arr = zeros(sink_height_extra_channels_max, 1);
-power_required_arr = zeros(sink_height_extra_channels_max, 1);
+outlet_temp_arr = zeros(fin_iters, 1);
+cooling_power_arr = zeros(fin_iters, 1);
+power_required_arr = zeros(fin_iters, 1);
+mass_flow_arr = zeros(fin_iters, 1);
+air_velocity_arr = zeros(fin_iters, 1);
+area_all_channels_arr = zeros(fin_iters, 1);
 J_optimal = 0;
 max_cooling_power = 0;
 T_h_optimal = 0;
@@ -78,7 +84,7 @@ COP_optimal = 0;
 outlet_temp_cold_optimal = 0;
 outlet_temp_hot_optimal = 0;
 
-for i = 1:length(delta_sink_height_extra_channels_arr)
+for i = 1:fin_iters
     
     % Redefine fin conditions - Cold Side 
     
@@ -150,6 +156,9 @@ for i = 1:length(delta_sink_height_extra_channels_arr)
     cooling_power_arr(i) = Q_c_peltier;
     power_required_arr(i) = power_required;
     outlet_temp_arr(i) = outlet_temp_cold;
+    mass_flow_arr(i) = m_dot_air_cold;
+    air_velocity_arr(i) = mass_flow_arr(i) / total_cross_section_fin_area;
+    area_all_channels_arr(i) = total_cross_section_fin_area;
     
     % Find optimal current which gives max cooling
     if -Q_c_peltier > -max_cooling_power
@@ -208,6 +217,8 @@ fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp
 
 %% Plot final graphs
 
+% CHANGEME
+
 % % Plot graph of Cooling power against Fin Width
 % figure(1)
 % plot(delta_fin_width_arr, cooling_power_arr);
@@ -233,7 +244,7 @@ ylabel("Cooling Power [W]");
 grid on;
 
 
-% Plot graph of Outlet Temperature against Fin Length
+% % Plot graph of Outlet Temperature against Fin Length
 % hold on;
 % figure(2)
 % plot(delta_fin_width_arr, outlet_temp_arr);
@@ -259,6 +270,41 @@ title("Outlet Temp against Sink Height");
 xlabel("Sink Height [m]");
 ylabel("Outlet Temperature [K]");
 grid on;
+
+
+% % % Plot graph of Mass flow rate, air velocity and CS area against fin dim
+% hold on;
+% figure(3)
+% % plot(delta_fin_width_arr, mass_flow_arr, delta_fin_width_arr, air_velocity_arr, delta_fin_width_arr, area_all_channels_arr);
+% plot(delta_fin_width_arr, air_velocity_arr);
+% title("Air Velocity against Fin Width");
+% xlabel("Fin Width [m]");
+% ylabel("Air Speed [m/s]");
+% % legend("Mass Flow Rate", "Air Velocity", "CS Area", "Location", "NorthEast");
+% grid on;
+
+% % % Plot graph of Mass flow rate, air velocity and CS area against fin dim
+% hold on;
+% figure(3)
+% % plot(delta_fin_length_arr, mass_flow_arr, delta_fin_length_arr, air_velocity_arr, delta_fin_length_arr, area_all_channels_arr);
+% plot(delta_fin_length_arr, air_velocity_arr);
+% title("Air Velocity against Fin Length");
+% xlabel("Fin Length [m]");
+% ylabel("Air Speed [m/s]");
+% % legend("Mass Flow Rate", "Air Velocity", "CS Area", "Location", "NorthEast");
+% grid on;
+
+% % Plot graph of Mass flow rate, air velocity and CS area against fin dim
+hold on;
+figure(3)
+% plot(delta_fin_length_arr, mass_flow_arr, delta_fin_length_arr, air_velocity_arr, delta_fin_length_arr, area_all_channels_arr);
+plot(delta_sink_height_extra_channels_arr, air_velocity_arr);
+title("Air Velocity against Sink Height");
+xlabel("Sink Height [m]");
+ylabel("Air Speed [m/s]");
+% legend("Mass Flow Rate", "Air Velocity", "CS Area", "Location", "NorthEast");
+grid on;
+
 
 
 
