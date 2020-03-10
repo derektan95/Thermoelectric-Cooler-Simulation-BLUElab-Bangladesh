@@ -13,14 +13,21 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 
 %% Define simulation parameters (CHANGME)
 
-% To iterate
-fin_width = 0.045;          % Original short fin width
-fin_width_iters = 100;
-fin_width_max = 0.45;       % 10 times the length
+% % To iterate fin Width
+% fin_width = 0.045;          % Original short fin width
+% fin_width_iters = 100;
+% fin_width_max = 0.45;       % 10 times the length
+% 
+% % To iterate fin Length
+% fin_length = 0.021;
+% fin_length_iters = 100;
+% fin_length_max = 0.21;       % 10 times the length
+%
+% % To iterate sink height
+sink_height_extra_channels = 0;
+sink_height_extra_channels_iters = 100;
+sink_height_extra_channels_max = 100;       % 10 times the length
 
-fin_length = 0.021;
-fin_length_iters = 100;
-fin_length_max = 0.21;       % 10 times the length
 
 % General parameters
 J_e = 0.93;   
@@ -52,10 +59,11 @@ fprintf('Inlet Air Speed - Hot Side (U_hot): %.1f m/s \n', air_speed_hot);
 %% Main Calculation Body
 
 % delta_fin_width_arr = linspace(fin_width, fin_width_max, fin_width_iters);
-delta_fin_length_arr = linspace(fin_length, fin_length_max, fin_length_iters);
+% delta_fin_length_arr = linspace(fin_length, fin_length_max, fin_length_iters);
+delta_sink_height_extra_channels_arr = linspace(sink_height_extra_channels, sink_height_extra_channels_max, sink_height_extra_channels_iters);
 
-cooling_power_arr = zeros(fin_width_iters, 1);
-power_required_arr = zeros(fin_width_iters, 1);
+cooling_power_arr = zeros(sink_height_extra_channels_iters, 1);
+power_required_arr = zeros(sink_height_extra_channels_iters, 1);
 J_optimal = 0;
 max_cooling_power = 0;
 T_h_optimal = 0;
@@ -65,16 +73,29 @@ COP_optimal = 0;
 outlet_temp_cold_optimal = 0;
 outlet_temp_hot_optimal = 0;
 
-for i = 1:length(delta_fin_length_arr)
+for i = 1:length(delta_sink_height_extra_channels_arr)
     
-    % Redefine fin conditions - Cold Side       
-    fin_width_cold = 0.045;           % length parallel to flow [m]
-    fin_length_cold = delta_fin_length_arr(i);             % CHANGEME
-    fin_thickness_cold = 0.001;          % CHANGEME
-    sink_height_cold = 0.04;            % CHANGEME
-    num_fins_cold = 9;               % CHANGEME
+    % Redefine fin conditions - Cold Side 
+    
+    % Param that stay constant
+    width_btwn_fins = 0.0039;
     k_fin_cold = 237;                % Conduction Coeff - Aluminum [W/mK]
+    fin_thickness_cold = 0.001;          % CHANGEME
+    
+    fin_width_cold = 0.045;           % length parallel to flow [m]
+%     fin_width_cold = delta_fin_width_arr(i);  
 
+    fin_length_cold = 0.021;
+%     fin_length_cold = delta_fin_length_arr(i);  
+
+    % Don't increment on 1st iteration
+    if i > 0
+        sink_height_cold = sink_height_cold + width_btwn_fins + fin_thickness_cold;           
+        num_fins_cold = num_fins_cold + 1;    
+    end
+    delta_sink_height_extra_channels_arr(i) = sink_height_cold;
+    
+    
     per_fin_area_cold = 2 * fin_width_cold * fin_length_cold;
     base_area_cold = (fin_width_cold * sink_height_cold) - (num_fins_cold * fin_width_cold * fin_thickness_cold);  
     fin_area_total_cold = ( (num_fins_cold-1) * per_fin_area_cold) + base_area_cold;
@@ -82,7 +103,7 @@ for i = 1:length(delta_fin_length_arr)
     % Calculate flow channel
     height = fin_length_cold;
     num_channels = num_fins_cold - 1;
-    width_btwn_fins = (sink_height_cold - (num_fins_cold * fin_thickness_cold) )/num_channels;
+%     width_btwn_fins = (sink_height_cold - (num_fins_cold * fin_thickness_cold) )/num_channels;
     Area_cross_sect_cold_per_channel = (height * width_btwn_fins);
     perimeter_per_channel = (2 * height) + (2 * width_btwn_fins);
     Dh_cold_per_channel = 4*Area_cross_sect_cold_per_channel/perimeter_per_channel; 
@@ -183,12 +204,20 @@ fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp
 % ylabel("Cooling Power [W]");
 % grid on;
 
+% figure(1)
+% plot(delta_fin_length_arr, cooling_power_arr);
+% title("Cooling Power against Fin Length");
+% xlabel("Fin Length [m]");
+% ylabel("Cooling Power [W]");
+% grid on;
+
 figure(1)
-plot(delta_fin_length_arr, cooling_power_arr);
-title("Cooling Power against Fin Length");
-xlabel("Fin Length [m]");
+plot(delta_sink_height_extra_channels_arr, cooling_power_arr);
+title("Cooling Power against Sink Height");
+xlabel("Sink Height [m]");
 ylabel("Cooling Power [W]");
 grid on;
+
 
 % Plot abs cooling power and power consumption against current
 % hold on;
