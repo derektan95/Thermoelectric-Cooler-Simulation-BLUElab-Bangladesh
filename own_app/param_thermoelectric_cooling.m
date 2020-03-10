@@ -65,11 +65,12 @@ fin_area_total_hot = ( (num_fins_hot-1) * per_fin_area_hot) + base_area_hot;
 % fin_area_total_hot = fin_area_total_cold*4;      % Given by prof's example [m^2]  
 
 %% Dimensions of flow channel (between sheets)
-% According to size of heat sink on cold side...
+% According to size of heat sink on cold side... (account for area covered
+% by fins)
 
 width = sink_height_cold;
 height = fin_length_cold;
-Area_cross_sect_cold = height * width;
+Area_cross_sect_cold = (height * width) - (num_fins_cold * fin_length_cold * fin_thickness_cold);
 perimeter = (2 * height) + (2 * width);
 Dh_cold = 4*Area_cross_sect_cold/perimeter; 
 

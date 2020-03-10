@@ -15,7 +15,7 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
-J_iters = 20;
+J_iters = 30;
 J_max = 4.0;
 
 % Initial conditions - Cold Side (Air restricted to channel)
@@ -102,16 +102,18 @@ for i = 1:length(delta_J_arr)
     
     % Print results..
     fprintf('<strong>===Iteration %d===\n</strong>', i);
-    fprintf('Input Current (J_e): %.1f A \n', J_e);
+    fprintf('Input Current (J_e): %.2f A \n', J_e);
     fprintf('Power Required (P_e): %.1f W\n', power_required);
     fprintf('Coefficient of Performance (COP): %.1f %% \n', coefficient_performance);
     
     % Cold side
+    fprintf('---\n');
     fprintf('Cold side Temperature (T_c): %.1f K \n', T_c_peltier);
     fprintf('Cooling Power - Cold Side (Q_c_peltier): %.2f W\n', Q_c_peltier);
     fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.1f K\n', outlet_temp_cold);
     
     % Hot side
+    fprintf('---\n');
     fprintf('Hot side Temperature (T_h): %.1f K \n', T_h_peltier);
     fprintf('Heating Power - Hot Side (Q_h_peltier): %.2f W\n', Q_h_peltier);
     fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp_hot);
@@ -123,16 +125,18 @@ end
 
 fprintf('<strong>===Optimal Results===\n</strong>');
 
-fprintf('Input Current (J_e): %.1f A \n', J_optimal);
+fprintf('Input Current (J_e): %.2f A \n', J_optimal);
 fprintf('Power Required (P_e): %.1f W\n', power_required_optimal);
 fprintf('Coefficient of Performance (COP): %.1f %% \n', COP_optimal);
 
 % Cold side
+fprintf('---\n');
 fprintf('Cold side Temperature (T_c): %.1f K \n', T_c_optimal);
 fprintf('Cooling Power - Cold Side (Q_c_peltier): %.2f W\n', max_cooling_power);
 fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.1f K\n', outlet_temp_cold_optimal);
 
 % Hot side
+fprintf('---\n');
 fprintf('Hot side Temperature (T_h): %.1f K \n', T_h_optimal);
 fprintf('Heating Power - Hot Side (Q_h_peltier): %.2f W\n', max_heating_power);
 fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp_hot_optimal);
