@@ -70,21 +70,18 @@ for i = 1:length(delta_J_arr)
     syms x y z
     eqn1 = ((x - y) / R_k_hc) + (overall_fin_eff_hot * (x-inlet_temp_hot) / R_ku_hot) == (num_semi_cond * alpha_seeback * J_e * x) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
     eqn2 = (-(x - y) / R_k_hc) + z == (-num_semi_cond * alpha_seeback * J_e * y) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
-    eqn3 = z == (overall_fin_eff_cold * (y - inlet_temp_cold) ) / R_ku_cold;
+    eqn3 = z == (overall_fin_eff_cold * num_channels * (y - inlet_temp_cold) ) / R_ku_cold;
 
     sol = solve([eqn1, eqn2, eqn3], [x, y, z]);
     T_h_peltier = double(sol.x);
     T_c_peltier = double(sol.y);
-    Q_c_peltier_per_channel = double(sol.z);
+    Q_c_peltier = double(sol.z);
     
     Q_h_peltier = (T_h_peltier - inlet_temp_hot) / R_ku_hot;
     power_conduction_peltier = (T_h_peltier - T_c_peltier) / R_k_hc;
-    outlet_temp_cold = inlet_temp_cold + ( (Q_c_peltier_per_channel) / (m_dot_air_cold_per_channel * Cp_air) );
+    outlet_temp_cold = inlet_temp_cold + ( (Q_c_peltier / num_channels) / (m_dot_air_cold_per_channel * Cp_air) );
     outlet_temp_hot = inlet_temp_hot + Q_h_peltier/(m_dot_air_hot * Cp_air);
     power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
-    
-    % Compute total cooling power from all channels...
-    Q_c_peltier = Q_c_peltier_per_channel * num_channels;
     coefficient_performance = -100 * Q_c_peltier / power_required;
     
     cooling_power_arr(i) = Q_c_peltier;
@@ -126,7 +123,7 @@ end
 % Display optimal results
 % outlet_temp_cold_optimal = inlet_temp_cold + max_cooling_power/(m_dot_air_cold * Cp_air);
 
-fprintf('<strong>===Optimal Results===\n</strong>');
+fprintf('<strong>===Optimal Current Results===\n</strong>');
 
 fprintf('Input Current (J_e): %.2f A \n', J_optimal);
 fprintf('Power Required (P_e): %.1f W\n', power_required_optimal);
