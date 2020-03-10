@@ -2,7 +2,7 @@
 % Implement struct data structure in the future!
 
 % warning('off','all');           % Turn off all warnings
-run("param_thermoelectric_cooling.m");
+run("param_thermoelectric_cooling_dimension_analysis.m");
 
 %% Declare variables as global for use in other scripts (bad practice)
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
@@ -44,7 +44,7 @@ fprintf('Inlet Air Temperature - Cold Side (T_in_cold): %.3f K \n', inlet_temp_c
 fprintf('Inlet Air Speed - Cold Side (U_cold): %.1f m/s \n', air_speed_cold);
 fprintf('Inlet Air Temperature - Hot Side (T_in_hot): %.3f K \n', inlet_temp_hot);
 fprintf('Inlet Air Speed - Hot Side (U_hot): %.1f m/s \n', air_speed_hot);
-fprintf('Convective Coefficient Resistance (R_ku_c) - Cold Side: %.3f K/W\n', R_ku_cold);
+fprintf('Convective Coefficient Resistance PER CHANNEL (R_ku_c) - Cold Side: %.3f K/W\n', R_ku_cold);
 fprintf('Convective Coefficient Resistance (R_ku_h) - Hot Side: %.3f K/W\n', R_ku_hot);
 fprintf('Conductive Coefficient Resistance (R_k_hc): %.3f K/W\n\n', R_k_hc);
 
