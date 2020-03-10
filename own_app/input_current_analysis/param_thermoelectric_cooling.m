@@ -36,9 +36,10 @@ alpha_seeback = alpha_s_pos - alpha_s_neg;
 R_e_hc = (height_semi_cond/(width_semi_cond^2)) * (rho_e_pos + rho_e_neg);
 R_k_hc = 1 / ( num_semi_cond * (width_semi_cond^2/height_semi_cond) * (k_bismuth_pos + k_bismuth_neg) );
 
-%% Dimensions of fins
 
-% Fin conditions - Cold Side       
+%% Fin conditions - Cold Side      
+
+% SMALL COLD FIN
 fin_width_cold = 0.045;           % length parallel to flow [m]
 fin_length_cold = 0.021;             % CHANGEME
 fin_thickness_cold = 0.001;          % CHANGEME
@@ -49,9 +50,22 @@ k_fin_cold = 237;                % Conduction Coeff - Aluminum [W/mK]
 per_fin_area_cold = 2 * fin_width_cold * fin_length_cold;
 base_area_cold = (fin_width_cold * sink_height_cold) - (num_fins_cold * fin_width_cold * fin_thickness_cold);  
 fin_area_total_cold = ( (num_fins_cold-1) * per_fin_area_cold) + base_area_cold;
-% fin_area_total_cold = 0.05;      % Given by prof's example [m^2]
+% % fin_area_total_cold = 0.05;      % Given by prof's example [m^2]
 
-% Fin conditions - Hot Side (ASSUMING 2* BIGGER ON ALL SIDES)     
+% % LARGE COLD FIN (Same as on hot side)
+% fin_width_cold = 0.12;                % length parallel to flow [m]
+% fin_length_cold = 0.027;                              % CHANGEME
+% fin_thickness_cold = 0.001;                           % CHANGEME
+% sink_height_cold = 0.08;                             % CHANGEME
+% num_fins_cold = 12;                                % CHANGEME
+% k_fin_cold = 237;                                 % Conduction Coeff - Aluminum [W/mK]
+%     
+% per_fin_area_cold = 2 * fin_width_cold * fin_length_cold;
+% base_area_cold = (fin_width_cold * sink_height_cold) - (num_fins_cold * fin_width_cold * fin_thickness_cold);  
+% fin_area_total_cold = ( (num_fins_cold-1) * per_fin_area_cold) + base_area_cold;
+
+
+%% Fin conditions - Hot Side     
 fin_width_hot = 0.12;                % length parallel to flow [m]
 fin_length_hot = 0.027;                              % CHANGEME
 fin_thickness_hot = 0.001;                           % CHANGEME
@@ -63,6 +77,7 @@ per_fin_area_hot = 2 * fin_width_hot * fin_length_hot;
 base_area_hot = (fin_width_hot * sink_height_hot) - (num_fins_hot * fin_width_hot * fin_thickness_hot); 
 fin_area_total_hot = ( (num_fins_hot-1) * per_fin_area_hot) + base_area_hot;
 % fin_area_total_hot = fin_area_total_cold*4;      % Given by prof's example [m^2]  
+
 
 %% Dimensions of flow channel (between sheets)
 % According to size of heat sink on cold side... (account for area covered
