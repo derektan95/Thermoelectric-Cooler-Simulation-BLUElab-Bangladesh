@@ -22,14 +22,14 @@ rho_air = 1.177;                     % Density (Kg/m^3)
 
 
 % Table C.9 - Bismuth Telluride Peltier element properties (TEC1-12706)
-alpha_s_pos = 2.3 * 10^-4;           % V/degC
-alpha_s_neg = -2.1 * 10^-4;          % V/degC
-rho_e_pos = 10^-5;                   % Ohm-m
+alpha_s_pos = 1.05 * 10^-4;           % V/degC
+alpha_s_neg = -1.05 * 10^-4;          % V/degC
+rho_e_pos = 0.5 * 10^-5;                   % Ohm-m
 rho_e_neg = rho_e_pos;               % Ohm-m
-k_bismuth_pos = 1.7;                 % W/mK
-k_bismuth_neg = 1.45;                % W/mK
-width_semi_cond = 0.00125;            % m (NOT TOO SURE..)
-height_semi_cond = 0.0035;           % m
+k_bismuth_pos = 0.8;                 % W/mK
+k_bismuth_neg = 0.8;                % W/mK
+width_semi_cond = 0.0018;            % m (NOT TOO SURE..)
+height_semi_cond = 0.0027;           % m
 num_semi_cond = 254;                 % 127 couples
 
 alpha_seeback = alpha_s_pos - alpha_s_neg;

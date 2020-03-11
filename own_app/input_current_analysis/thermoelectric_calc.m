@@ -15,8 +15,8 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
-J_iters = 40;
-J_max = 4.0;
+J_iters = 100;
+J_max = 8.0;
 
 % Initial conditions - Cold Side (Air restricted to channel)
 inlet_temp_cold = 308.15;   % K
@@ -61,6 +61,7 @@ fprintf('Conductive Coefficient Resistance (R_k_hc): %.3f K/W\n\n', R_k_hc);
 %% Main Calculation Body
 
 cooling_power_arr = zeros(J_iters, 1);
+heating_power_arr = zeros(J_iters, 1);
 power_required_arr = zeros(J_iters, 1);
 delta_J_arr = linspace(0, J_max, J_iters);
 J_optimal = 0;
@@ -95,6 +96,7 @@ for i = 1:length(delta_J_arr)
     coefficient_performance = -100 * Q_c_peltier / power_required;
     
     cooling_power_arr(i) = Q_c_peltier;
+    heating_power_arr(i) = Q_h_peltier;
     power_required_arr(i) = power_required;
     
     % Find optimal current which gives max cooling
@@ -156,10 +158,11 @@ fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp
 
 % Plot graph of Cooling power against Current
 figure(1)
-plot(delta_J_arr, cooling_power_arr);
-title("Cooling Power against Input Current");
+plot(delta_J_arr, cooling_power_arr, delta_J_arr, heating_power_arr, delta_J_arr, power_required_arr);
+title("Power against Input Current");
 xlabel("Current [A]");
-ylabel("Cooling Power [W]");
+ylabel("Power [W]");
+legend("Cooling Power (Q_c)", "Heating Power (Q_h)", "Power Input", "Location", "NorthEast");
 grid on;
 
 % Plot abs cooling power and power consumption against current
