@@ -15,7 +15,7 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
-J_iters = 400;
+J_iters = 40;
 J_max = 4.0;
 
 % Initial conditions - Cold Side (Air restricted to channel)

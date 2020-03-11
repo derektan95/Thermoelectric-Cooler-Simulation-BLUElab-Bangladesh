@@ -15,12 +15,12 @@ global R_e_hc R_k_hc alpha_seeback num_semi_cond
 % Table C.9 - Bismuth Telluride Peltier element properties (TEC1-12706)
 alpha_s_pos = 2.3 * 10^-4;           % V/degC
 alpha_s_neg = -2.1 * 10^-4;          % V/degC
-rho_e_pos =  10^-5;                   % Ohm-m
+rho_e_pos = 10^-5;                   % Ohm-m
 rho_e_neg = rho_e_pos;               % Ohm-m
 k_bismuth_pos = 1.7;                 % W/mK
 k_bismuth_neg = 1.45;                % W/mK
-width_semi_cond = 0.00138;            % m (NOT TOO SURE..)
-height_semi_cond = 0.0032;           % m
+width_semi_cond = 0.00125;            % m (NOT TOO SURE..)
+height_semi_cond = 0.0035;           % m
 num_semi_cond = 254;                 % 127 couples
 
 alpha_seeback = alpha_s_pos - alpha_s_neg;
@@ -70,7 +70,7 @@ for i = 1:length(delta_T_arr)
     cooling_power_arr_5_amp(i) = -(num_semi_cond * alpha_seeback * J_e * T_c) + (delta_T_arr(i) / R_k_hc) + (0.5 * num_semi_cond * R_e_hc * J_e^2);
     
     % 6 A
-    J_e = 6;
+    J_e = 6.1;
     cooling_power_arr_6_amp(i) = -(num_semi_cond * alpha_seeback * J_e * T_c) + (delta_T_arr(i) / R_k_hc) + (0.5 * num_semi_cond * R_e_hc * J_e^2);
     
 end
@@ -80,6 +80,6 @@ title("Cooling Power against Delta Temp (Hot vs Cold Side)");
 xlabel("Delta T [K]");
 ylabel("Power [W]");
 ylim([1,80]);
-legend("1A", "2A", "3A", "4A", "5A", "6A", "Location", "NorthEast");
+legend("1A", "2A", "3A", "4A", "5A", "6.1A", "Location", "NorthEast");
 grid on;
 
