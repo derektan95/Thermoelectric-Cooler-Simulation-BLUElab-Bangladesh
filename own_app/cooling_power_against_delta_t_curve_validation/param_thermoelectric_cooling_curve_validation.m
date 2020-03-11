@@ -13,12 +13,12 @@ global R_e_hc R_k_hc alpha_seeback num_semi_cond
 
 
 % Table C.9 - Bismuth Telluride Peltier element properties (TEC1-12706)
-alpha_s_pos = 2.3 * 10^-4;           % V/degC
-alpha_s_neg = -2.1 * 10^-4;          % V/degC
-rho_e_pos = 10^-5;                   % Ohm-m
+alpha_s_pos = 1 * 10^-4;           % V/degC
+alpha_s_neg = -1 * 10^-4;          % V/degC
+rho_e_pos = 0.15 * 10^-5;                   % Ohm-m
 rho_e_neg = rho_e_pos;               % Ohm-m
-k_bismuth_pos = 1.7;                 % W/mK
-k_bismuth_neg = 1.45;                % W/mK
+k_bismuth_pos = 2.3;                 % W/mK
+k_bismuth_neg = 2.3;                % W/mK
 width_semi_cond = 0.00125;            % m (NOT TOO SURE..)
 height_semi_cond = 0.0035;           % m
 num_semi_cond = 254;                 % 127 couples
@@ -30,7 +30,7 @@ R_k_hc = 1 / ( num_semi_cond * (width_semi_cond^2/height_semi_cond) * (k_bismuth
 %% Plot cooling power against delta T curve
 
 % T_h = 27 + 273.16;
-T_h = 50 + 273.16;
+T_h = 27 + 273.16;
 
 delta_T_max = 80;
 iters = 80;
