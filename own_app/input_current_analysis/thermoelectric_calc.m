@@ -20,7 +20,7 @@ J_max = 8.0;
 
 % Initial conditions - Cold Side (Air restricted to channel)
 inlet_temp_cold = 308.15;   % K
-CFM_nominal_cold = 5.8579;                           % Nominal from specsheet
+CFM_nominal_cold = 59;                           % Nominal from specsheet (Small Fan = 5.8579, Large Fan = 59)
 input_voltage_adjust_factor = 1.93;                                % Divide CFM by voltage divident
 CFM_fan_cold = CFM_nominal_cold / input_voltage_adjust_factor;       % CubicFt/min (CFM_max = 5.8579)
 volumetric_flow_rate_cold = CFM_fan_cold * ((0.3048^3) / 60);   % m^3/s - conversion factor
@@ -86,9 +86,9 @@ for i = 1:length(delta_J_arr)
     sol = solve([eqn1, eqn2, eqn3], [x, y, z]);
     T_h_peltier = double(sol.x);
     T_c_peltier = double(sol.y);
-    Q_c_peltier = double(sol.z);
+    Q_c_peltier = double(sol.z);        % Already factored in cold efficiency and all channels...
     
-    Q_h_peltier = (T_h_peltier - inlet_temp_hot) / R_ku_hot;
+    Q_h_peltier = overall_fin_eff_hot * (T_h_peltier - inlet_temp_hot) / R_ku_hot;
     power_conduction_peltier = (T_h_peltier - T_c_peltier) / R_k_hc;
     outlet_temp_cold = inlet_temp_cold + ( (Q_c_peltier / num_channels) / (m_dot_air_cold_per_channel * Cp_air) );
     outlet_temp_hot = inlet_temp_hot + Q_h_peltier/(m_dot_air_hot * Cp_air);
