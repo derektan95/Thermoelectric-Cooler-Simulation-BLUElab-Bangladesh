@@ -15,13 +15,13 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
-J_iters = 100;
+J_iters = 50;
 J_max = 8.0;
 
 % Initial conditions - Cold Side (Air restricted to channel)
 inlet_temp_cold = 308.15;   % K
-CFM_nominal_cold = 59;                           % Nominal from specsheet (Small Fan = 5.8579, Large Fan = 59)
-input_voltage_adjust_factor = 1.93;                                % Divide CFM by voltage divident
+CFM_nominal_cold = 43;                           % Nominal from specsheet (Small Fan = 5.8579, Large Fan = 59)
+input_voltage_adjust_factor = 2;                                % Divide CFM by voltage divident
 CFM_fan_cold = CFM_nominal_cold / input_voltage_adjust_factor;       % CubicFt/min (CFM_max = 5.8579)
 volumetric_flow_rate_cold = CFM_fan_cold * ((0.3048^3) / 60);   % m^3/s - conversion factor
 m_dot_air_cold = volumetric_flow_rate_cold / rho_air;
