@@ -21,8 +21,8 @@ Pr_air = 0.69;                       % Prandt Num ()
 rho_air = 1.177;                     % Density (Kg/m^3)
 
 
-% Table C.9 - Bismuth Telluride Peltier element properties (TEC1-12706) -
-% match Spec Sheet...
+% % Table C.9 - Bismuth Telluride Peltier element properties (TEC1-12706) -
+% % match Spec Sheet...
 alpha_s_pos = 1.25 * 10^-4;           % V/degC
 alpha_s_neg = -1.25 * 10^-4;          % V/degC
 rho_e_pos = 0.28 * 10^-5;                   % Ohm-m
@@ -43,6 +43,18 @@ num_semi_cond = 220;                 % 127 couples
 % width_semi_cond = 0.0018;            % m (NOT TOO SURE..)
 % height_semi_cond = 0.0027;           % m
 % num_semi_cond = 254;                 % 127 couples
+
+% % USED FOR MORE POWER BUT MORE INPUT CURRENT...
+% % Bismuth Telluride Peltier element properties (TEC1-12710)
+% alpha_s_pos = 1.15 * 10^-4;           % V/degC
+% alpha_s_neg = -1.1 * 10^-4;          % V/degC
+% rho_e_pos = 0.28 * 10^-5;                   % Ohm-m
+% rho_e_neg = rho_e_pos;               % Ohm-m
+% k_bismuth_pos = 1.7;                 % W/mK
+% k_bismuth_neg = 1.65;                % W/mK
+% width_semi_cond = 0.00135;            % m 
+% height_semi_cond = 0.0019;           % m
+% num_semi_cond = 252;                 % 127 couples
 
 alpha_seeback = alpha_s_pos - alpha_s_neg;
 R_e_hc = (height_semi_cond/(width_semi_cond^2)) * (rho_e_pos + rho_e_neg);
