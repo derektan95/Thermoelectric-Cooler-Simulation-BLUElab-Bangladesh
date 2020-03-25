@@ -24,7 +24,7 @@ CFM_nominal_cold = 33;                           % Nominal from specsheet (Small
 input_voltage_adjust_factor = 2;                                % Divide CFM by voltage divident
 CFM_fan_cold = CFM_nominal_cold / input_voltage_adjust_factor;       % CubicFt/min (CFM_max = 5.8579)
 volumetric_flow_rate_cold = CFM_fan_cold * ((0.3048^3) / 60);   % m^3/s - conversion factor
-m_dot_air_cold = volumetric_flow_rate_cold / rho_air;
+m_dot_air_cold = volumetric_flow_rate_cold * rho_air;
 % fan_area_cold = pi * 0.02^2;                                   % CHANGEME
 total_cross_section_fin_area = Area_cross_sect_cold_per_channel * num_channels;
 air_speed_cold = volumetric_flow_rate_cold / total_cross_section_fin_area ;         % m/s
