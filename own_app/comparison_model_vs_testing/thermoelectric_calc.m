@@ -195,25 +195,23 @@ green = [0.4660 0.6740 0.3880];
 figure(1)
 plot(delta_J_arr, -cooling_power_arr, '-', 'Color', dark_blue);
 hold on;
+errorbar(delta_J_arr, cooling_power_test_arr, cooling_power_test_err, cooling_power_test_err, J_input_err, J_input_err, '--', 'Color', dark_blue)
 plot(delta_J_arr, power_required_arr, '-', 'Color', orange);
-title("Model vs Test Results - Cooling and Input Power");
+errorbar(delta_J_arr, power_input_test_arr, power_input_test_err, power_input_test_err, J_input_err, J_input_err, '--', 'Color', orange)
+
+title("Model vs Test Results (TEC1-12710) - Cooling and Input Power");
 xlabel("Current [A]");
 ylabel("Power [W]");
 grid on;
 set(gca,'FontSize',12)
-
-% Plotting test plots with error bars
-errorbar(delta_J_arr, cooling_power_test_arr, cooling_power_test_err, cooling_power_test_err, J_input_err, J_input_err, '--', 'Color', dark_blue)
-errorbar(delta_J_arr, power_input_test_arr, power_input_test_err, power_input_test_err, J_input_err, J_input_err, '--', 'Color', orange)
-
-legend("Q_c (Model)", "Q_i_n (Model)", "Q_c (Experimental)", "Q_i_n (Experimental)", "Location", "NorthWest");
+legend("Q_c (Model)", "Q_c (Experimental)", "Q_i_n (Model)", "Q_i_n (Experimental)", "Location", "NorthWest");
 
 
 figure(2)
 plot(delta_J_arr, COP_arr, '-', 'Color', dark_blue);
 hold on;
 errorbar(delta_J_arr, COP_test_arr*100, COP_test_err*100, COP_test_err*100, J_input_err, J_input_err, '-', 'Color', orange)
-title("Model vs Test Results - COP");
+title("Model vs Test Results (TEC1-12710) - COP");
 xlabel("Current [A]");
 ylabel("COP [%]");
 grid on;
