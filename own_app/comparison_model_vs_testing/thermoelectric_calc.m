@@ -11,6 +11,21 @@ global R_e_hc R_k_hc alpha_seeback num_semi_cond
 global fin_width_cold fin_length_cold fin_thickness_cold sink_height_cold num_fins_cold k_fin_cold per_fin_area_cold base_area_cold fin_area_total_cold
 global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_hot k_fin_hot per_fin_area_hot base_area_hot fin_area_total_hot 
 
+%% Importing from excel test data
+
+% Main Data
+current_input_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C14:N14');
+cooling_power_test_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C49:N49');
+power_input_test_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C60:N60');
+COP_test_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C64:N64');
+
+% Error bars
+J_input_err = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C17:N17');
+cooling_power_test_err = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C50:N50');
+power_input_test_err = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C61:N61');
+COP_test_err = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C65:N65');
+
+
 %% Define simulation parameters (CHANGME)
 
 % General parameters
@@ -18,11 +33,6 @@ J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
 J_iters = 100;
 J_max = 10.0;
 
-% For comparison with test results
-J_input = xlsread("experimental_results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C6:N6');
-Q_test = xlsread("experimental_results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C32:N32');
-power_input_test = xlsread("experimental_results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C42:N42');
-COP_test = xlsread("experimental_results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C43:N43');
 
 % Initial conditions - Cold Side (Air restricted to channel)
 inlet_temp_cold = 308.15;   % K
@@ -75,12 +85,12 @@ fprintf('Conductive Coefficient Resistance (R_k_hc): %.3f K/W\n\n', R_k_hc);
 % delta_J_arr = linspace(0, J_max, J_iters);
 
 % % IF COMPARING WITH TEST RESULTS
-cooling_power_arr = zeros(length(J_input), 1);
-heating_power_arr = zeros(length(J_input), 1);
-power_required_arr = zeros(length(J_input), 1);
-outlet_temp_cold_arr = zeros(length(J_input), 1);
-COP_arr = zeros(length(J_input), 1);
-delta_J_arr = J_input;
+cooling_power_arr = zeros(length(current_input_arr), 1);
+heating_power_arr = zeros(length(current_input_arr), 1);
+power_required_arr = zeros(length(current_input_arr), 1);
+outlet_temp_cold_arr = zeros(length(current_input_arr), 1);
+COP_arr = zeros(length(current_input_arr), 1);
+delta_J_arr = current_input_arr;
 
 J_optimal = 0;
 max_cooling_power = 0;
@@ -176,35 +186,39 @@ fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp
 
 %% Plot final graphs
 
-% % Plot graph of Cooling power against Current
-% figure(1)
-% plot(delta_J_arr, cooling_power_arr, delta_J_arr, heating_power_arr, delta_J_arr, power_required_arr);
-% title("Power against Input Current");
-% xlabel("Current [A]");
-% ylabel("Power [W]");
-% legend("Cooling Power (Q_c)", "Heating Power (Q_h)", "Power Input", "Location", "NorthEast");
-% grid on;
-% 
-% % Plot abs cooling power and power consumption against current
-% hold on;
-% figure(2)
-% plot(delta_J_arr, -cooling_power_arr, delta_J_arr, power_required_arr, delta_J_arr, outlet_temp_cold_arr);
-% title("Absolute Cooling Power and Power Consumption against Input Current");
-% xlabel("Current [A]");
-% ylabel("Power [W]");
-% legend("Cooling Power", "Power Consumed", "Outlet Temp [degC]", "Location", "NorthEast");
-% grid on;
+% Preset colors for graph specification (Defualt from matlab)
+dark_blue = [0 0.4470 0.7410];
+orange = [0.8500 0.3250 0.0980];
+green = [0.4660 0.6740 0.3880];
 
 % % Cooling power (Model vs test results)
 figure(1)
-plot(delta_J_arr, -cooling_power_arr, '-b', delta_J_arr, Q_test, '--', delta_J_arr, power_required_arr, '-', delta_J_arr, power_input_test, '--', delta_J_arr, COP_arr, '-', delta_J_arr, COP_test*100, '--' );
-title("Model vs Test Results");
+plot(delta_J_arr, -cooling_power_arr, '-', 'Color', dark_blue);
+hold on;
+plot(delta_J_arr, power_required_arr, '-', 'Color', orange);
+title("Model vs Test Results - Cooling and Input Power");
 xlabel("Current [A]");
 ylabel("Power [W]");
-legend("Q_c (Model)", "Q_c (Test)", "Q_i_n (Model)", "Q_i_n (Test)", "COP (Model)", "COP (Test)", "Location", "NorthEast");
 grid on;
 set(gca,'FontSize',12)
 
+% Plotting test plots with error bars
+errorbar(delta_J_arr, cooling_power_test_arr, cooling_power_test_err, cooling_power_test_err, J_input_err, J_input_err, '--', 'Color', dark_blue)
+errorbar(delta_J_arr, power_input_test_arr, power_input_test_err, power_input_test_err, J_input_err, J_input_err, '--', 'Color', orange)
+
+legend("Q_c (Model)", "Q_i_n (Model)", "Q_c (Experimental)", "Q_i_n (Experimental)", "Location", "NorthWest");
+
+
+figure(2)
+plot(delta_J_arr, COP_arr, '-', 'Color', dark_blue);
+hold on;
+errorbar(delta_J_arr, COP_test_arr*100, COP_test_err*100, COP_test_err*100, J_input_err, J_input_err, '-', 'Color', orange)
+title("Model vs Test Results - COP");
+xlabel("Current [A]");
+ylabel("COP [%]");
+grid on;
+set(gca,'FontSize',12)
+legend("COP (Model)", "COP (Experimental)", "Location", "NorthEast");
 
 
 
