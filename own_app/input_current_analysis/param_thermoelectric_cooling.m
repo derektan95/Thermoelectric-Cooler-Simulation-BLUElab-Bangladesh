@@ -114,20 +114,20 @@ fin_area_total_cold = ( (num_fins_cold-1) * per_fin_area_cold) + base_area_cold;
 %% Fin conditions - Hot Side     
 
 % % Defualt hot fins
-% fin_width_hot = 0.12;                % length parallel to flow [m]
-% fin_length_hot = 0.027;                              % CHANGEME
-% fin_thickness_hot = 0.001;                           % CHANGEME
-% sink_height_hot = 0.08;                             % CHANGEME
-% num_fins_hot = 12;                                % CHANGEME
-% k_fin_hot = 237;                                 % Conduction Coeff - Aluminum [W/mK]
+fin_width_hot = 0.12;                % length parallel to flow [m]
+fin_length_hot = 0.027;                              % CHANGEME
+fin_thickness_hot = 0.001;                           % CHANGEME
+sink_height_hot = 0.08;                             % CHANGEME
+num_fins_hot = 12;                                % CHANGEME
+k_fin_hot = 237;                                 % Conduction Coeff - Aluminum [W/mK]
     
 % % Longer Length FIN (Fin 4)
-fin_width_hot = 0.15;           % length parallel to flow [m]
-fin_length_hot = 0.03125;             % CHANGEME
-fin_thickness_hot = 0.000834;          % CHANGEME
-sink_height_hot = 0.069;            % CHANGEME
-num_fins_hot = 27;               % CHANGEME
-k_fin_hot = 237;                % Conduction Coeff - Aluminum [W/mK]
+% fin_width_hot = 0.15;           % length parallel to flow [m]
+% fin_length_hot = 0.03125;             % CHANGEME
+% fin_thickness_hot = 0.000834;          % CHANGEME
+% sink_height_hot = 0.069;            % CHANGEME
+% num_fins_hot = 27;               % CHANGEME
+% k_fin_hot = 237;                % Conduction Coeff - Aluminum [W/mK]
 
 % % Fin 5
 % fin_width_hot = 0.10;           % length parallel to flow [m]

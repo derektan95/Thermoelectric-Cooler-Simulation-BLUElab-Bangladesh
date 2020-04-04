@@ -23,7 +23,7 @@ height_semi_cond = 0.0019;           % m
 num_semi_cond = 252;                 % 127 couples
 
 
-% % Bismuth Telluride Peltier element properties (TEC1-12706)
+% % Bismuth Telluride Peltier element properties (TEC1-12706) - correct
 % alpha_s_pos = 1.25 * 10^-4;           % V/degC
 % alpha_s_neg = -1.25 * 10^-4;          % V/degC
 % rho_e_pos = 0.28 * 10^-5;                   % Ohm-m
@@ -106,8 +106,9 @@ end
 plot(delta_T_arr, -cooling_power_arr_1_amp, delta_T_arr, -cooling_power_arr_2_amp, delta_T_arr, -cooling_power_arr_3_amp, delta_T_arr, -cooling_power_arr_4_amp, delta_T_arr, -cooling_power_arr_5_amp, delta_T_arr, -cooling_power_arr_6_amp);
 title("Cooling Power against Delta Temp (Hot vs Cold Side)");
 xlabel("Delta T [K]");
-ylabel("Power [W]");
+ylabel("Cooling Power [W]");
 ylim([1,120]);
 legend("1A", "2A", "3A", "4A", "5A", "6.1A", "Location", "NorthEast");
 grid on;
+set(gca,'FontSize',14)
 
