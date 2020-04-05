@@ -18,6 +18,7 @@ current_input_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12
 cooling_power_test_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C49:N49');
 power_input_test_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C60:N60');
 COP_test_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C64:N64');
+average_inlet_air_temp = 273.15 + xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'Q13');
 
 % Error bars
 J_input_err = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C17:N17');
@@ -35,7 +36,7 @@ J_max = 10.0;
 
 
 % Initial conditions - Cold Side (Air restricted to channel)
-inlet_temp_cold = 308.15;   % K
+inlet_temp_cold = average_inlet_air_temp;   % K
 CFM_nominal_cold = 18.43;                           % Nominal from specsheet (Small Fan = 5.8579, Large Fan = 59)
 input_voltage_adjust_factor = 1;                                % Divide CFM by voltage divident
 CFM_fan_cold = CFM_nominal_cold / input_voltage_adjust_factor;       % CubicFt/min (CFM_max = 5.8579)
@@ -50,7 +51,7 @@ m_dot_air_cold_per_channel = Area_cross_sect_cold_per_channel * rho_air * air_sp
 % m_dot_air_cold_per_channel_1 = m_dot_air_cold / num_channels;
 
 % Initial conditions - Hot Side (Air not restricted to channel)
-inlet_temp_hot = 308.15;   % K
+inlet_temp_hot = average_inlet_air_temp;   % K
 CFM_fan_hot = 39.173;              % CubicFt/min
 volumetric_flow_rate_hot = CFM_fan_hot * ((0.3048^3) / 60);   % m^3/s - conversion factor
 m_dot_air_hot = volumetric_flow_rate_hot / rho_air;
