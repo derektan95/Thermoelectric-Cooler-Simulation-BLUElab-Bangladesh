@@ -2,7 +2,7 @@
 % Implement struct data structure in the future!
 
 % warning('off','all');           % Turn off all warnings
-run("param_thermoelectric_cooling.m");
+run("param_thermoelectric_cooling_comparison.m");
 
 %% Declare variables as global for use in other scripts (bad practice)
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
@@ -18,6 +18,7 @@ current_input_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12
 cooling_power_test_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C49:N49');
 power_input_test_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C60:N60');
 COP_test_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C64:N64');
+delta_temp_test_arr = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C43:N43');
 average_inlet_air_temp = 273.15 + xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'Q13');
 
 % Error bars
@@ -25,7 +26,7 @@ J_input_err = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-F
 cooling_power_test_err = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C50:N50');
 power_input_test_err = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C61:N61');
 COP_test_err = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C65:N65');
-
+delta_temp_test_err = xlsread("Experimental Results.xlsx", "Current Sweep (TEC1-12710)-Fan1", 'C44:N44');
 
 %% Define simulation parameters (CHANGME)
 
@@ -79,11 +80,6 @@ fprintf('Conductive Coefficient Resistance (R_k_hc): %.3f K/W\n\n', R_k_hc);
 
 % % TODO: CHANGE WHEN DOING COMPARISON WTIH TEST RESULTS 
 % % IF DOING MATLAB MODEL CURRENT SWEEP
-% cooling_power_arr = zeros(J_iters, 1);
-% heating_power_arr = zeros(J_iters, 1);
-% power_required_arr = zeros(J_iters, 1);
-% outlet_temp_cold_arr = zeros(J_iters, 1);
-% delta_J_arr = linspace(0, J_max, J_iters);
 
 % % IF COMPARING WITH TEST RESULTS
 cooling_power_arr = zeros(length(current_input_arr), 1);
@@ -91,6 +87,7 @@ heating_power_arr = zeros(length(current_input_arr), 1);
 power_required_arr = zeros(length(current_input_arr), 1);
 outlet_temp_cold_arr = zeros(length(current_input_arr), 1);
 COP_arr = zeros(length(current_input_arr), 1);
+delta_temp_array = zeros(length(current_input_arr), 1);
 delta_J_arr = current_input_arr;
 
 J_optimal = 0;
@@ -124,11 +121,13 @@ for i = 1:length(delta_J_arr)
     power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
     coefficient_performance = -100 * Q_c_peltier / power_required;
     
+    % Save results for plotting later
     cooling_power_arr(i) = Q_c_peltier;
     heating_power_arr(i) = Q_h_peltier;
     power_required_arr(i) = power_required;
     outlet_temp_cold_arr(i) =  outlet_temp_cold - 273.15;
     COP_arr(i) = coefficient_performance;
+    delta_temp_array(i) = outlet_temp_cold - average_inlet_air_temp;
     
     % Find optimal current which gives max cooling
     if -Q_c_peltier > -max_cooling_power
@@ -192,7 +191,7 @@ dark_blue = [0 0.4470 0.7410];
 orange = [0.8500 0.3250 0.0980];
 green = [0.4660 0.6740 0.3880];
 
-% % Cooling power (Model vs test results)
+% % Cooling and Input power (Model vs Experimental)
 figure(1)
 plot(delta_J_arr, -cooling_power_arr, '-', 'Color', dark_blue);
 hold on;
@@ -200,24 +199,36 @@ errorbar(delta_J_arr, cooling_power_test_arr, cooling_power_test_err, cooling_po
 plot(delta_J_arr, power_required_arr, '-', 'Color', orange);
 errorbar(delta_J_arr, power_input_test_arr, power_input_test_err, power_input_test_err, J_input_err, J_input_err, '--', 'Color', orange)
 
-title("Model vs Test Results (TEC1-12710) - Cooling and Input Power");
+title("Model vs Experimental (TEC1-12710) - Cooling and Input Power");
 xlabel("Current [A]");
 ylabel("Power [W]");
 grid on;
 set(gca,'FontSize',12)
 legend("Q_c (Model)", "Q_c (Experimental)", "Q_i_n (Model)", "Q_i_n (Experimental)", "Location", "NorthWest");
 
-
+% COP (Model vs Experimental)
 figure(2)
 plot(delta_J_arr, COP_arr, '-', 'Color', dark_blue);
 hold on;
 errorbar(delta_J_arr, COP_test_arr*100, COP_test_err*100, COP_test_err*100, J_input_err, J_input_err, '-', 'Color', orange)
-title("Model vs Test Results (TEC1-12710) - COP");
+title("Model vs Experimental (TEC1-12710) - COP");
 xlabel("Current [A]");
 ylabel("COP [%]");
 grid on;
 set(gca,'FontSize',12)
 legend("COP (Model)", "COP (Experimental)", "Location", "NorthEast");
+
+% Delta Temp of outlet air (Model vs Experimental)
+figure(3)
+plot(delta_J_arr, delta_temp_array, '-', 'Color', dark_blue);
+hold on;
+errorbar(delta_J_arr, -delta_temp_test_arr, delta_temp_test_err, delta_temp_test_err, J_input_err, J_input_err, '-', 'Color', orange)
+title("Model vs Experimental (TEC1-12710) - Cold Air Temp Difference");
+xlabel("Current [A]");
+ylabel("Delta Temp [K]");
+grid on;
+set(gca,'FontSize',12)
+legend("Delta Temp (Model)", "Delta Temp (Experimental)", "Location", "SouthEast");
 
 
 
