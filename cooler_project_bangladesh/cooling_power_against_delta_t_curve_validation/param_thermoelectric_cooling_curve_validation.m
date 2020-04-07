@@ -12,27 +12,27 @@ global R_e_hc R_k_hc alpha_seeback num_semi_cond
 
 % % USED FOR HIGHER COOLING POWER (MORE CURRENT DRAWN)
 % % Bismuth Telluride Peltier element properties (TEC1-12710)
-alpha_s_pos = 1.15 * 10^-4;           % V/degC
-alpha_s_neg = -1.1 * 10^-4;          % V/degC
-rho_e_pos = 0.28 * 10^-5;                   % Ohm-m
-rho_e_neg = rho_e_pos;               % Ohm-m
-k_bismuth_pos = 1.7;                 % W/mK
-k_bismuth_neg = 1.65;                % W/mK
-width_semi_cond = 0.00135;            % m 
-height_semi_cond = 0.0019;           % m
-num_semi_cond = 252;                 % 127 couples
+% alpha_s_pos = 1.15 * 10^-4;           % V/degC
+% alpha_s_neg = -1.1 * 10^-4;          % V/degC
+% rho_e_pos = 0.28 * 10^-5;                   % Ohm-m
+% rho_e_neg = rho_e_pos;               % Ohm-m
+% k_bismuth_pos = 1.7;                 % W/mK
+% k_bismuth_neg = 1.65;                % W/mK
+% width_semi_cond = 0.00135;            % m 
+% height_semi_cond = 0.0019;           % m
+% num_semi_cond = 252;                 % 127 couples
 
 
 % % Bismuth Telluride Peltier element properties (TEC1-12706) - correct
-% alpha_s_pos = 1.25 * 10^-4;           % V/degC
-% alpha_s_neg = -1.25 * 10^-4;          % V/degC
-% rho_e_pos = 0.28 * 10^-5;                   % Ohm-m
-% rho_e_neg = rho_e_pos;               % Ohm-m
-% k_bismuth_pos = 2.0;                 % W/mK
-% k_bismuth_neg = 2.0;                % W/mK
-% width_semi_cond = 0.0011;            % m 
-% height_semi_cond = 0.0022;           % m
-% num_semi_cond = 220;                 % 127 couples
+alpha_s_pos = 1.25 * 10^-4;           % V/degC
+alpha_s_neg = -1.25 * 10^-4;          % V/degC
+rho_e_pos = 0.28 * 10^-5;                   % Ohm-m
+rho_e_neg = rho_e_pos;               % Ohm-m
+k_bismuth_pos = 2.0;                 % W/mK
+k_bismuth_neg = 2.0;                % W/mK
+width_semi_cond = 0.0011;            % m 
+height_semi_cond = 0.0022;           % m
+num_semi_cond = 220;                 % 127 couples
 
 
 % % Table C.9 - Bismuth Telluride Peltier element properties (TEC1-12706)
@@ -73,7 +73,7 @@ for i = 1:length(delta_T_arr)
     T_c = T_h - delta_T_arr(i);
     
 %     % 1 A
-%     J_e = 1;
+    J_e = 1;
 %     cooling_power_arr_1_amp(i) = -(num_semi_cond * alpha_seeback * J_e * T_c) + (delta_T_arr(i) / R_k_hc) + (0.5 * num_semi_cond * R_e_hc * J_e^2);
     
     % 2 A
@@ -82,23 +82,23 @@ for i = 1:length(delta_T_arr)
     cooling_power_arr_2_amp(i) = -(num_semi_cond * alpha_seeback * J_e * T_c) + (delta_T_arr(i) / R_k_hc) + (0.5 * num_semi_cond * R_e_hc * J_e^2);
     
     % 3 A
-%     J_e = 3;
-    J_e = 4;
+    J_e = 3;
+%     J_e = 4;
     cooling_power_arr_3_amp(i) = -(num_semi_cond * alpha_seeback * J_e * T_c) + (delta_T_arr(i) / R_k_hc) + (0.5 * num_semi_cond * R_e_hc * J_e^2);
     
     % 4 A
-%     J_e = 4;
-    J_e = 6;
+    J_e = 4;
+%     J_e = 6;
     cooling_power_arr_4_amp(i) = -(num_semi_cond * alpha_seeback * J_e * T_c) + (delta_T_arr(i) / R_k_hc) + (0.5 * num_semi_cond * R_e_hc * J_e^2);
     
     % 5 A
-%     J_e = 5;
-    J_e = 8;
+    J_e = 5;
+%     J_e = 8;
     cooling_power_arr_5_amp(i) = -(num_semi_cond * alpha_seeback * J_e * T_c) + (delta_T_arr(i) / R_k_hc) + (0.5 * num_semi_cond * R_e_hc * J_e^2);
     
     % 6 A
-%     J_e = 6.1;
-    J_e = 10.1;
+    J_e = 6.1;
+%     J_e = 10.1;
     cooling_power_arr_6_amp(i) = -(num_semi_cond * alpha_seeback * J_e * T_c) + (delta_T_arr(i) / R_k_hc) + (0.5 * num_semi_cond * R_e_hc * J_e^2);
     
 end
