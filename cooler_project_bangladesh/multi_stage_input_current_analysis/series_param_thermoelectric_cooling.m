@@ -88,20 +88,20 @@ R_k_hc = 1 / ( num_semi_cond * (width_semi_cond^2/height_semi_cond) * (k_bismuth
 % k_fin_cold = 237;                % Conduction Coeff - Aluminum [W/mK]
 
 % % Longer Length FIN (Fin 4)
-fin_width_cold = 0.15;           % length parallel to flow [m]
-fin_length_cold = 0.03125;             % CHANGEME
-fin_thickness_cold = 0.0007;          % CHANGEME
-sink_height_cold = 0.0693;            % CHANGEME
-num_fins_cold = 27;               % CHANGEME
-k_fin_cold = 237;                % Conduction Coeff - Aluminum [W/mK]
-
-% % Shorter Length FIN (Fin 5) - Esp for 2 stage analysis
-% fin_width_cold = 0.10;           % length parallel to flow [m]
+% fin_width_cold = 0.15;           % length parallel to flow [m]
 % fin_length_cold = 0.03125;             % CHANGEME
 % fin_thickness_cold = 0.0007;          % CHANGEME
 % sink_height_cold = 0.0693;            % CHANGEME
 % num_fins_cold = 27;               % CHANGEME
 % k_fin_cold = 237;                % Conduction Coeff - Aluminum [W/mK]
+
+% % Shorter Length FIN (Fin 5) - Esp for 2 stage analysis
+fin_width_cold = 0.10;           % length parallel to flow [m]
+fin_length_cold = 0.03125;             % CHANGEME
+fin_thickness_cold = 0.0007;          % CHANGEME
+sink_height_cold = 0.0693;            % CHANGEME
+num_fins_cold = 27;               % CHANGEME
+k_fin_cold = 237;                % Conduction Coeff - Aluminum [W/mK]
 
 per_fin_area_cold = 2 * fin_width_cold * fin_length_cold;
 base_area_cold = (fin_width_cold * sink_height_cold) - (num_fins_cold * fin_width_cold * fin_thickness_cold);  
@@ -122,12 +122,12 @@ fin_area_total_cold = ( (num_fins_cold-1) * per_fin_area_cold) + base_area_cold;
 % k_fin_hot = 237;                                 % Conduction Coeff - Aluminum [W/mK]
     
 % % Longer Length FIN (Fin 4)
-fin_width_hot = 0.15;           % length parallel to flow [m]
-fin_length_hot = 0.03125;             % CHANGEME
-fin_thickness_hot = 0.0007;          % CHANGEME
-sink_height_hot = 0.0693;            % CHANGEME
-num_fins_hot = 27;               % CHANGEME
-k_fin_hot = 237;                % Conduction Coeff - Aluminum [W/mK]
+% fin_width_hot = 0.15;           % length parallel to flow [m]
+% fin_length_hot = 0.03125;             % CHANGEME
+% fin_thickness_hot = 0.0007;          % CHANGEME
+% sink_height_hot = 0.0693;            % CHANGEME
+% num_fins_hot = 27;               % CHANGEME
+% k_fin_hot = 237;                % Conduction Coeff - Aluminum [W/mK]
 
 % % Fin 5
 % fin_width_hot = 0.10;           % length parallel to flow [m]
@@ -138,12 +138,12 @@ k_fin_hot = 237;                % Conduction Coeff - Aluminum [W/mK]
 % k_fin_hot = 237;                % Conduction Coeff - Aluminum [W/mK]
 
 % % Cut Fin 4 (150mm) into half
-% fin_width_hot = 0.075;           % length parallel to flow [m]
-% fin_length_hot = 0.03125;             % CHANGEME
-% fin_thickness_hot = 0.0007;          % CHANGEME
-% sink_height_hot = 0.0693;            % CHANGEME
-% num_fins_hot = 27;               % CHANGEME
-% k_fin_hot = 237;                % Conduction Coeff - Aluminum [W/mK]
+fin_width_hot = 0.075;           % length parallel to flow [m]
+fin_length_hot = 0.03125;             % CHANGEME
+fin_thickness_hot = 0.0007;          % CHANGEME
+sink_height_hot = 0.0693;            % CHANGEME
+num_fins_hot = 27;               % CHANGEME
+k_fin_hot = 237;                % Conduction Coeff - Aluminum [W/mK]
 
 
 per_fin_area_hot = 2 * fin_width_hot * fin_length_hot;                              

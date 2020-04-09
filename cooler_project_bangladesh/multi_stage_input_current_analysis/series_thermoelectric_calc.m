@@ -2,7 +2,7 @@
 % Implement struct data structure in the future!
 
 % warning('off','all');           % Turn off all warnings
-run("param_thermoelectric_cooling.m");
+run("series_param_thermoelectric_cooling.m");
 
 %% Declare variables as global for use in other scripts (bad practice)
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
@@ -12,6 +12,9 @@ global fin_width_cold fin_length_cold fin_thickness_cold sink_height_cold num_fi
 global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_hot k_fin_hot per_fin_area_hot base_area_hot fin_area_total_hot 
 
 %% Define simulation parameters (CHANGME)
+
+% Number of stages (for peltier modules in series)
+num_stages = 2;
 
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
@@ -60,11 +63,16 @@ fprintf('Conductive Coefficient Resistance (R_k_hc): %.3f K/W\n\n', R_k_hc);
 
 %% Main Calculation Body
 
+% Initialize data structure for plotting
 cooling_power_arr = zeros(J_iters, 1);
 heating_power_arr = zeros(J_iters, 1);
 power_required_arr = zeros(J_iters, 1);
 outlet_temp_cold_arr = zeros(J_iters, 1);
 delta_J_arr = linspace(0, J_max, J_iters);
+
+% Accumulated variables for through "num_stages" stages
+
+% Optimal Variables for optimal current
 J_optimal = 0;
 max_cooling_power = 0;
 T_h_optimal = 0;
@@ -77,24 +85,39 @@ outlet_temp_hot_optimal = 0;
 for i = 1:length(delta_J_arr)
     
     J_e = delta_J_arr(i);
+    inlet_temp_cold = 308.15;       % Re-initialize inlet_temp
+    fprintf('\n<strong>===Iteration %d===\n</strong>', i);
+    fprintf('Input Current (J_e): %.2f A \n\n', J_e);
     
-    % x = T_h, y = T_c, z = Q_c
-    syms x y z
-    eqn1 = ((x - y) / R_k_hc) + (overall_fin_eff_hot * (x-inlet_temp_hot) / R_ku_hot) == (num_semi_cond * alpha_seeback * J_e * x) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
-    eqn2 = (-(x - y) / R_k_hc) + z == (-num_semi_cond * alpha_seeback * J_e * y) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
-    eqn3 = z == (overall_fin_eff_cold * num_channels * (y - inlet_temp_cold) ) / R_ku_cold;
+    % Loop based on number of stages
+    for j = 1:num_stages
+        
+        fprintf('<strong>Stage %d \n</strong>', j);
+        fprintf('Inlet Air Temperature - Cold Side (T_in_cold): %.3f K \n', inlet_temp_cold);
+    
+        % x = T_h, y = T_c, z = Q_c
+        syms x y z
+        eqn1 = ((x - y) / R_k_hc) + (overall_fin_eff_hot * (x-inlet_temp_hot) / R_ku_hot) == (num_semi_cond * alpha_seeback * J_e * x) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
+        eqn2 = (-(x - y) / R_k_hc) + z == (-num_semi_cond * alpha_seeback * J_e * y) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
+        eqn3 = z == (overall_fin_eff_cold * num_channels * (y - inlet_temp_cold) ) / R_ku_cold;
 
-    sol = solve([eqn1, eqn2, eqn3], [x, y, z]);
-    T_h_peltier = double(sol.x);
-    T_c_peltier = double(sol.y);
-    Q_c_peltier = double(sol.z);        % Already factored in cold efficiency and all channels...
-    
-    Q_h_peltier = overall_fin_eff_hot * (T_h_peltier - inlet_temp_hot) / R_ku_hot;
-    power_conduction_peltier = (T_h_peltier - T_c_peltier) / R_k_hc;
-    outlet_temp_cold = inlet_temp_cold + ( (Q_c_peltier / num_channels) / (m_dot_air_cold_per_channel * Cp_air) );
-    outlet_temp_hot = inlet_temp_hot + Q_h_peltier/(m_dot_air_hot * Cp_air);
-    power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
-    coefficient_performance = -100 * Q_c_peltier / power_required;
+        sol = solve([eqn1, eqn2, eqn3], [x, y, z]);
+        T_h_peltier = double(sol.x);
+        T_c_peltier = double(sol.y);
+        Q_c_peltier = double(sol.z);        % Already factored in cold efficiency and all channels...
+
+        Q_h_peltier = overall_fin_eff_hot * (T_h_peltier - inlet_temp_hot) / R_ku_hot;
+        power_conduction_peltier = (T_h_peltier - T_c_peltier) / R_k_hc;
+        outlet_temp_cold = inlet_temp_cold + ( (Q_c_peltier / num_channels) / (m_dot_air_cold_per_channel * Cp_air) );
+        outlet_temp_hot = inlet_temp_hot + Q_h_peltier/(m_dot_air_hot * Cp_air);
+        power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
+        coefficient_performance = -100 * Q_c_peltier / power_required;
+        
+        % Update inlet temperature to outlet temp of previous iteration
+        inlet_temp_cold = outlet_temp_cold;
+        fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.3f K \n\n', outlet_temp_cold);
+        
+   end
     
     cooling_power_arr(i) = Q_c_peltier;
     heating_power_arr(i) = Q_h_peltier;
@@ -115,8 +138,7 @@ for i = 1:length(delta_J_arr)
     end
     
     % Print results..
-    fprintf('<strong>===Iteration %d===\n</strong>', i);
-    fprintf('Input Current (J_e): %.2f A \n', J_e);
+    fprintf('<strong>Summary \n</strong>');
     fprintf('Power Required (P_e): %.1f W\n', power_required);
     fprintf('Coefficient of Performance (COP): %.1f %% \n', coefficient_performance);
     
