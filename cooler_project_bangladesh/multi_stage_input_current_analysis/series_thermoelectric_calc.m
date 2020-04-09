@@ -18,13 +18,13 @@ num_stages = 2;
 
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
-J_iters = 30;
+J_iters = 100;
 J_max = 10.0;
 
 % Initial conditions - Cold Side (Air restricted to channel)
 inlet_temp_cold = 308.15;   % K
 CFM_nominal_cold = 33;                           % Nominal from specsheet (Small Fan = 5.8579, Large Fan = 59)
-input_voltage_adjust_factor = 2;                                % Divide CFM by voltage divident
+input_voltage_adjust_factor = 1;                                % Divide CFM by voltage divident
 CFM_fan_cold = CFM_nominal_cold / input_voltage_adjust_factor;       % CubicFt/min (CFM_max = 5.8579)
 volumetric_flow_rate_cold = CFM_fan_cold * ((0.3048^3) / 60);   % m^3/s - conversion factor
 m_dot_air_cold = volumetric_flow_rate_cold * rho_air;
@@ -68,9 +68,8 @@ cooling_power_arr = zeros(J_iters, 1);
 heating_power_arr = zeros(J_iters, 1);
 power_required_arr = zeros(J_iters, 1);
 outlet_temp_cold_arr = zeros(J_iters, 1);
+COP_arr = zeros(J_iters, 1);
 delta_J_arr = linspace(0, J_max, J_iters);
-
-% Accumulated variables for through "num_stages" stages
 
 % Optimal Variables for optimal current
 J_optimal = 0;
@@ -89,10 +88,15 @@ for i = 1:length(delta_J_arr)
     fprintf('\n<strong>===Iteration %d===\n</strong>', i);
     fprintf('Input Current (J_e): %.2f A \n\n', J_e);
     
+    % Accumulated variables for through "num_stages" stages
+    cooling_power_total = 0;
+    heating_power_total = 0;
+    power_required_total = 0;
+    
     % Loop based on number of stages
     for j = 1:num_stages
         
-        fprintf('<strong>Stage %d \n</strong>', j);
+        fprintf('<strong>-Stage %d- \n</strong>', j);
         fprintf('Inlet Air Temperature - Cold Side (T_in_cold): %.3f K \n', inlet_temp_cold);
     
         % x = T_h, y = T_c, z = Q_c
@@ -113,45 +117,55 @@ for i = 1:length(delta_J_arr)
         power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
         coefficient_performance = -100 * Q_c_peltier / power_required;
         
+        % Increment data for variables tracking overall performance
+        cooling_power_total = cooling_power_total + Q_c_peltier;
+        heating_power_total = heating_power_total + Q_h_peltier;
+        power_required_total = power_required_total + power_required;
+        
         % Update inlet temperature to outlet temp of previous iteration
         inlet_temp_cold = outlet_temp_cold;
         fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.3f K \n\n', outlet_temp_cold);
         
-   end
+    end
     
-    cooling_power_arr(i) = Q_c_peltier;
-    heating_power_arr(i) = Q_h_peltier;
-    power_required_arr(i) = power_required;
+   % Store overall performance from multi-stage analysis
+    cooling_power_arr(i) = cooling_power_total;
+    heating_power_arr(i) = heating_power_total;
+    power_required_arr(i) = power_required_total;
     outlet_temp_cold_arr(i) =  outlet_temp_cold - 273.15;
     
+    % Calculate overall COP
+    COP_total = -(100 * cooling_power_total) / power_required_total;
+    COP_arr(i)= COP_total;
+    
     % Find optimal current which gives max cooling
-    if -Q_c_peltier > -max_cooling_power
-        max_cooling_power = Q_c_peltier;
-        max_heating_power = Q_h_peltier;
+    if -cooling_power_total > -max_cooling_power
+        max_cooling_power = cooling_power_total;
+        max_heating_power = heating_power_total;
         J_optimal = J_e;
         T_h_optimal = T_h_peltier;
         T_c_optimal = T_c_peltier;
-        power_required_optimal = power_required;
-        COP_optimal = coefficient_performance;
+        power_required_optimal = power_required_total;
+        COP_optimal = COP_total;
         outlet_temp_cold_optimal = outlet_temp_cold;
         outlet_temp_hot_optimal = outlet_temp_hot;
     end
     
     % Print results..
     fprintf('<strong>Summary \n</strong>');
-    fprintf('Power Required (P_e): %.1f W\n', power_required);
-    fprintf('Coefficient of Performance (COP): %.1f %% \n', coefficient_performance);
+    fprintf('Overall Power Required (P_e): %.1f W\n', power_required_total);
+    fprintf('Coefficient of Performance (COP): %.1f %% \n', COP_total);
     
     % Cold side
     fprintf('---\n');
     fprintf('Cold side Temperature (T_c): %.1f K \n', T_c_peltier);
-    fprintf('Cooling Power - Cold Side (Q_c_peltier): %.2f W\n', Q_c_peltier);
+    fprintf('Overall Cooling Power - Cold Side (Q_c_peltier): %.2f W\n', cooling_power_total);
     fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.1f K\n', outlet_temp_cold);
     
     % Hot side
     fprintf('---\n');
     fprintf('Hot side Temperature (T_h): %.1f K \n', T_h_peltier);
-    fprintf('Heating Power - Hot Side (Q_h_peltier): %.2f W\n', Q_h_peltier);
+    fprintf('Overall Heating Power - Hot Side (Q_h_peltier): %.2f W\n', heating_power_total);
     fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp_hot);
 
 end
@@ -180,24 +194,34 @@ fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp
 
 %% Plot final graphs
 
-% Plot graph of Cooling power against Current
-figure(1)
-plot(delta_J_arr, cooling_power_arr, delta_J_arr, heating_power_arr, delta_J_arr, power_required_arr);
-title("Power against Input Current");
-xlabel("Current [A]");
-ylabel("Power [W]");
-legend("Cooling Power (Q_c)", "Heating Power (Q_h)", "Power Input", "Location", "NorthEast");
-grid on;
+% Remove data points for high COP for visibility sake
+for i = 1:length(delta_J_arr)
+    if delta_J_arr(i) < 1.3
+        COP_arr(i) = NaN;
+    end
+end
+
+% % Plot graph of Cooling power against Current
+% figure(1)
+% plot(delta_J_arr, cooling_power_arr, delta_J_arr, heating_power_arr, delta_J_arr, power_required_arr, delta_J_arr, COP_arr);
+% title("Power against Input Current");
+% xlabel("Current [A]");
+% ylabel("Power [W]");
+% legend("Cooling Power (Q_c)", "Heating Power (Q_h)", "Power Input", "COP [%]",  "Location", "NorthEast");
+% grid on;
+% set(gca,'FontSize',12)
 
 % Plot abs cooling power and power consumption against current
+
 hold on;
-figure(2)
-plot(delta_J_arr, -cooling_power_arr, delta_J_arr, power_required_arr, delta_J_arr, outlet_temp_cold_arr);
-title("Absolute Cooling Power and Power Consumption against Input Current");
+figure(1)
+plot(delta_J_arr, -cooling_power_arr, delta_J_arr, power_required_arr, delta_J_arr, outlet_temp_cold_arr, delta_J_arr, COP_arr);
+title("Input Current Analysis (TEC1-12710) - " + num_stages + " Peltier Modules in Series");
 xlabel("Current [A]");
-ylabel("Power [W]");
-legend("Cooling Power", "Power Consumed", "Outlet Temp [degC]", "Location", "NorthEast");
+ylabel("Magnitude");
+legend("Cooling Power [W]", "Power Consumed [W]", "Outlet Temp [degC]", "COP [%]", "Location", "NorthEast");
 grid on;
+set(gca,'FontSize',12)
 
 %% Main Functions Used
 
