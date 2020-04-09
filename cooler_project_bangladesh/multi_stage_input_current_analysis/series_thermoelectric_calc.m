@@ -216,7 +216,7 @@ end
 hold on;
 figure(1)
 plot(delta_J_arr, -cooling_power_arr, delta_J_arr, power_required_arr, delta_J_arr, outlet_temp_cold_arr, delta_J_arr, COP_arr);
-title("Input Current Analysis (TEC1-12710) - " + num_stages + " Peltier Modules in Series");
+title("Input Current Analysis (TEC1-12710) - " + num_stages + " Peltier Modules in Series [" + CFM_nominal_cold + " CFM]");
 xlabel("Current [A]");
 ylabel("Magnitude");
 legend("Cooling Power [W]", "Power Consumed [W]", "Outlet Temp [degC]", "COP [%]", "Location", "NorthEast");
