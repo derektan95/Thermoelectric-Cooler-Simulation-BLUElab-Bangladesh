@@ -21,7 +21,6 @@ J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
 J_iters = 100;
 J_max = 10.0;
 
-
 % Initial conditions - Cold Side (Air restricted to channel)
 inlet_temp_cold = 308.15;   % K
 CFM_nominal_cold = 92;                           % Nominal from specsheet (Small Fan = 5.8579, Large Fan = 59)
@@ -44,6 +43,8 @@ volumetric_flow_rate_hot = CFM_fan_hot * ((0.3048^3) / 60);   % m^3/s - conversi
 m_dot_air_hot = volumetric_flow_rate_hot / rho_air;
 % fan_area_hot = pi*0.04^2 - pi*0.02^2;                                       % CHANGEME
 fan_area_hot = pi * 0.07^2;
+% fan_area_hot = 0.14^2;
+% fan_area_hot = 0.06^2;
 air_speed_hot = volumetric_flow_rate_hot / fan_area_hot ;         % m/s
 
 % Compute convective coefficient & fin efficiencies

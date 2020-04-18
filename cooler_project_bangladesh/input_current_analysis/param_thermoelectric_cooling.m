@@ -138,7 +138,7 @@ fin_area_total_cold = ( (num_fins_cold-1) * per_fin_area_cold) + base_area_cold;
 % k_fin_hot = 237;                                 % Conduction Coeff - Aluminum [W/mK]
     
 % % Longer Length FIN (Fin 4)
-fin_width_hot = 0.125;           % length parallel to flow [m]
+fin_width_hot = 0.15;           % length parallel to flow [m]
 fin_length_hot = 0.03125;             % CHANGEME
 fin_thickness_hot = 0.0007;          % CHANGEME
 sink_height_hot = 0.0693;            % CHANGEME
