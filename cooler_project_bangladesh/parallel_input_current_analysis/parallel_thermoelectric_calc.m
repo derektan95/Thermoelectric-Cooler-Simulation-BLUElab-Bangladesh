@@ -2,7 +2,7 @@
 % Implement struct data structure in the future!
 
 % warning('off','all');           % Turn off all warnings
-run("param_thermoelectric_cooling.m");
+run("parallel_param_thermoelectric_cooling.m");
 
 %% Declare variables as global for use in other scripts (bad practice)
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
@@ -13,13 +13,14 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 
 %% Define simulation parameters (CHANGME)
 
+% % TODO: CHANGE ME!
+num_modules_parallel = 4;
+
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
 J_iters = 100;
 J_max = 10.0;
 
-% % TODO: CHANGE ME!
-% num_modules_parallel = 4;
 
 % Initial conditions - Cold Side (Air restricted to channel)
 inlet_temp_cold = 308.15;   % K
@@ -100,19 +101,19 @@ for i = 1:length(delta_J_arr)
     power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
     coefficient_performance = -100 * Q_c_peltier / power_required;
     
-    cooling_power_arr(i) = Q_c_peltier;
-    heating_power_arr(i) = Q_h_peltier;
-    power_required_arr(i) = power_required;
+    cooling_power_arr(i) = Q_c_peltier * num_modules_parallel;
+    heating_power_arr(i) = Q_h_peltier * num_modules_parallel;
+    power_required_arr(i) = power_required * num_modules_parallel;
     outlet_temp_cold_arr(i) =  outlet_temp_cold - 273.15;
     
     % Find optimal current which gives max cooling
     if -Q_c_peltier > -max_cooling_power
-        max_cooling_power = Q_c_peltier;
-        max_heating_power = Q_h_peltier;
+        max_cooling_power = Q_c_peltier * num_modules_parallel;
+        max_heating_power = Q_h_peltier * num_modules_parallel;
         J_optimal = J_e;
         T_h_optimal = T_h_peltier;
         T_c_optimal = T_c_peltier;
-        power_required_optimal = power_required;
+        power_required_optimal = power_required * num_modules_parallel;
         COP_optimal = coefficient_performance;
         outlet_temp_cold_optimal = outlet_temp_cold;
         outlet_temp_hot_optimal = outlet_temp_hot;
