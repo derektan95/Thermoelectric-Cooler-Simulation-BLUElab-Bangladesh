@@ -15,7 +15,7 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
-J_iters = 30;
+J_iters = 100;
 J_max = 10.0;
 
 % Initial conditions - Cold Side (Air restricted to channel)
@@ -38,7 +38,8 @@ inlet_temp_hot = 308.15;   % K
 CFM_fan_hot = 59;              % CubicFt/min
 volumetric_flow_rate_hot = CFM_fan_hot * ((0.3048^3) / 60);   % m^3/s - conversion factor
 m_dot_air_hot = volumetric_flow_rate_hot / rho_air;
-fan_area_hot = (pi * 0.04^2 - pi * 0.015^2);                                       % CHANGEME
+fan_area_hot = pi*0.04^2 - pi*0.02^2;                                       % CHANGEME
+% fan_area_hot = 0.14*0.14;
 air_speed_hot = volumetric_flow_rate_hot / fan_area_hot ;         % m/s
 
 % Compute convective coefficient & fin efficiencies
@@ -166,6 +167,7 @@ xlabel("Current [A]");
 ylabel("Power [W]");
 legend("Cooling Power (Q_c)", "Heating Power (Q_h)", "Power Input", "Location", "NorthEast");
 grid on;
+set(gca,'FontSize',12)
 
 % Plot abs cooling power and power consumption against current
 hold on;
@@ -174,8 +176,9 @@ plot(delta_J_arr, -cooling_power_arr, delta_J_arr, power_required_arr, delta_J_a
 title("Absolute Cooling Power and Power Consumption against Input Current");
 xlabel("Current [A]");
 ylabel("Power [W]");
-legend("Cooling Power", "Power Consumed", "Outlet Temp [degC]", "Location", "NorthEast");
+legend("Cooling Power [W]", "Power Consumed [W]", "Outlet Temp [K]", "Location", "NorthEast");
 grid on;
+set(gca,'FontSize',12)
 
 %% Main Functions Used
 
