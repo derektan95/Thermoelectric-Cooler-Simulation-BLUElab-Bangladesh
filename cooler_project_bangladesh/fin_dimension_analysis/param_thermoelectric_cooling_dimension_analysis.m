@@ -21,41 +21,45 @@ Pr_air = 0.69;                       % Prandt Num ()
 rho_air = 1.177;                     % Density (Kg/m^3)
 
 
-% Table C.9 - Bismuth Telluride Peltier element properties (TEC1-12706)
-% Match spec sheet and physical dimensions
-alpha_s_pos = 1.25 * 10^-4;           % V/degC
-alpha_s_neg = -1.25 * 10^-4;          % V/degC
-rho_e_pos = 0.28 * 10^-5;                   % Ohm-m
-rho_e_neg = rho_e_pos;               % Ohm-m
-k_bismuth_pos = 2.0;                 % W/mK
-k_bismuth_neg = 2.0;                % W/mK
-width_semi_cond = 0.0011;            % m 
-height_semi_cond = 0.0022;           % m
-num_semi_cond = 220;                 % 127 couples
-
-% % OLD
-% alpha_s_pos = 1.05 * 10^-4;           % V/degC
-% alpha_s_neg = -1.05 * 10^-4;          % V/degC
+% % Table C.9 - Bismuth Telluride Peltier element properties (TEC1-12706) -
+% % % match Spec Sheet...
+% % MORE ACCURATE 
+% alpha_s_pos = 2.5 * 10^-4;           % V/degC
+% alpha_s_neg = -2.35 * 10^-4;          % V/degC
 % rho_e_pos = 0.5 * 10^-5;                   % Ohm-m
 % rho_e_neg = rho_e_pos;               % Ohm-m
-% k_bismuth_pos = 0.8;                 % W/mK
-% k_bismuth_neg = 0.8;                % W/mK
-% width_semi_cond = 0.0018;            % m (NOT TOO SURE..)
-% height_semi_cond = 0.0027;           % m
-% num_semi_cond = 254;                 % 127 couples
+% k_bismuth_pos = 4.2;                 % W/mK
+% k_bismuth_neg = 4.2;                % W/mK
+% width_semi_cond = 0.00108;            % m 
+% height_semi_cond = 0.0022;           % m
+% num_semi_cond = 110;                 % 110 couples
 
-% % OLDEST
-% alpha_s_pos = 2.3 * 10^-4;           % V/degC
-% alpha_s_neg = -2.1 * 10^-4;          % V/degC
-% rho_e_pos = 10^-5;                   % Ohm-m
+% % LESS ACCURATE (TEC1-12706)
+% alpha_s_pos = 1.25 * 10^-4;           % V/degC
+% alpha_s_neg = -1.25 * 10^-4;          % V/degC
+% rho_e_pos = 0.28 * 10^-5;                   % Ohm-m
 % rho_e_neg = rho_e_pos;               % Ohm-m
-% k_bismuth_pos = 1.7;                 % W/mK
-% k_bismuth_neg = 1.45;                % W/mK
-% width_semi_cond = 0.00125;            % m (NOT TOO SURE..)
-% height_semi_cond = 0.0035;           % m
-% num_semi_cond = 254;                 % 127 couples
+% k_bismuth_pos = 2.0;                 % W/mK
+% k_bismuth_neg = 2.0;                % W/mK
+% width_semi_cond = 0.0011;            % m 
+% height_semi_cond = 0.0022;           % m
+% num_semi_cond = 220;                 % 110 couples (SHOULD ACTUALLY USE 110 instead of 220)
+
 
 % % USED FOR MORE POWER BUT MORE INPUT CURRENT...
+
+% % MORE ACCURATE
+% % Bismuth Telluride Peltier element properties (TEC1-12710)
+alpha_s_pos = 2.3 * 10^-4;           % V/degC
+alpha_s_neg = -2.2 * 10^-4;          % V/degC
+rho_e_pos = 0.55 * 10^-5;                   % Ohm-m
+rho_e_neg = rho_e_pos;               % Ohm-m
+k_bismuth_pos = 3.45;                 % W/mK
+k_bismuth_neg = 3.45;                % W/mK
+width_semi_cond = 0.00135;            % m 
+height_semi_cond = 0.0019;           % m
+num_semi_cond = 126;                 % 127 couples
+
 % % Bismuth Telluride Peltier element properties (TEC1-12710)
 % alpha_s_pos = 1.15 * 10^-4;           % V/degC
 % alpha_s_neg = -1.1 * 10^-4;          % V/degC
@@ -65,7 +69,8 @@ num_semi_cond = 220;                 % 127 couples
 % k_bismuth_neg = 1.65;                % W/mK
 % width_semi_cond = 0.00135;            % m 
 % height_semi_cond = 0.0019;           % m
-% num_semi_cond = 252;                 % 127 couples
+% num_semi_cond = 252;                 % 126 couples (SHOULD ACTUALLY USE 126 instead of 252)
+
 
 alpha_seeback = alpha_s_pos - alpha_s_neg;
 R_e_hc = (height_semi_cond/(width_semi_cond^2)) * (rho_e_pos + rho_e_neg);
