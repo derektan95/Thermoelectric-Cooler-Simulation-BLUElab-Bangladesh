@@ -13,38 +13,43 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 
 %% Importing from excel test data
 
+% % TODO: CHANGE ME
+% thermo_chip = "TEC1-12706";
+thermo_chip = "TEC1-12710";
+
 % % FOR TEC1-12706 experimental data...
-current_input_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C14:N14');
-cooling_power_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C49:N49');
-power_input_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C60:N60');
-COP_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C64:N64');
-delta_temp_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C43:N43');
-average_inlet_air_temp = 273.15 + xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'Q13');
+if thermo_chip == "TEC1-12706"
+    current_input_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C14:N14');
+    cooling_power_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C49:N49');
+    power_input_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C60:N60');
+    COP_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C64:N64');
+    delta_temp_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C43:N43');
+    average_inlet_air_temp = 273.15 + xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'Q13');
 
-% Error bars
-J_input_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C17:N17');
-cooling_power_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C50:N50');
-power_input_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C61:N61');
-COP_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C65:N65');
-delta_temp_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C44:N44');
+    % Error bars
+    J_input_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C17:N17');
+    cooling_power_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C50:N50');
+    power_input_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C61:N61');
+    COP_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C65:N65');
+    delta_temp_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12706)-Fan 12V", 'C44:N44');
 
+else
+    % FOR TEC1-12710 experimental data...
+    % Main Data
+    current_input_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C14:M14');
+    cooling_power_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C49:M49');
+    power_input_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C60:M60');
+    COP_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C64:M64');
+    delta_temp_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C43:M43');
+    average_inlet_air_temp = 273.15 + xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'P13');
 
-% % FOR TEC1-12710 experimental data...
-% % Main Data
-% current_input_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C14:N14');
-% cooling_power_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C49:N49');
-% power_input_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C60:N60');
-% COP_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C64:N64');
-% delta_temp_test_arr = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C43:N43');
-% average_inlet_air_temp = 273.15 + xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'Q13');
-% 
-% % Error bars
-% J_input_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C17:N17');
-% cooling_power_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C50:N50');
-% power_input_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C61:N61');
-% COP_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C65:N65');
-% delta_temp_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C44:N44');
-
+    % Error bars
+    J_input_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C17:N17');
+    cooling_power_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C50:N50');
+    power_input_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C61:N61');
+    COP_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C65:N65');
+    delta_temp_test_err = xlsread("Experimental Results.xlsx", "Current (TEC 1-12710)-Fan 12V", 'C44:N44');
+end
 
 %% Define simulation parameters (CHANGME)
 
@@ -217,7 +222,7 @@ errorbar(delta_J_arr, cooling_power_test_arr, cooling_power_test_err, cooling_po
 plot(delta_J_arr, power_required_arr, '-', 'Color', orange);
 errorbar(delta_J_arr, power_input_test_arr, power_input_test_err, power_input_test_err, J_input_err, J_input_err, '--', 'Color', orange)
 
-title("Model vs Experimental (TEC1-12706) - Cooling and Input Power");
+title("Model vs Experimental (" + thermo_chip + ") - Cooling and Input Power");
 xlabel("Current [A]");
 ylabel("Power [W]");
 grid on;
@@ -229,7 +234,7 @@ figure(2)
 plot(delta_J_arr, COP_arr, '-', 'Color', dark_blue);
 hold on;
 errorbar(delta_J_arr, COP_test_arr*100, COP_test_err*100, COP_test_err*100, J_input_err, J_input_err, '-', 'Color', orange)
-title("Model vs Experimental (TEC1-12706) - COP");
+title("Model vs Experimental (" + thermo_chip + ") - COP");
 xlabel("Current [A]");
 ylabel("COP [%]");
 grid on;
@@ -241,7 +246,7 @@ figure(3)
 plot(delta_J_arr, delta_temp_array, '-', 'Color', dark_blue);
 hold on;
 errorbar(delta_J_arr, -delta_temp_test_arr, delta_temp_test_err, delta_temp_test_err, J_input_err, J_input_err, '-', 'Color', orange)
-title("Model vs Experimental (TEC1-12706) - Cold Air Temp Difference");
+title("Model vs Experimental (" + thermo_chip + ") - Cold Air Temp Difference");
 xlabel("Current [A]");
 ylabel("Delta Temp [K]");
 grid on;
