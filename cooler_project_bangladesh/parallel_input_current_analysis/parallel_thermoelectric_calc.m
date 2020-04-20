@@ -93,28 +93,28 @@ for i = 1:length(delta_J_arr)
     sol = solve([eqn1, eqn2, eqn3], [x, y, z]);
     T_h_peltier = double(sol.x);
     T_c_peltier = double(sol.y);
-    Q_c_peltier = double(sol.z);        % Already factored in cold efficiency and all channels...
+    Q_c_peltier = double(sol.z) * num_modules_parallel;        % Already factored in cold efficiency and all channels...
     
-    Q_h_peltier = overall_fin_eff_hot * (T_h_peltier - inlet_temp_hot) / R_ku_hot;
+    Q_h_peltier = num_modules_parallel * overall_fin_eff_hot * (T_h_peltier - inlet_temp_hot) / R_ku_hot;
     power_conduction_peltier = (T_h_peltier - T_c_peltier) / R_k_hc;
     outlet_temp_cold = inlet_temp_cold + ( (Q_c_peltier / num_channels) / (m_dot_air_cold_per_channel * Cp_air) );
-    outlet_temp_hot = inlet_temp_hot + Q_h_peltier/(m_dot_air_hot * Cp_air);
-    power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
+    outlet_temp_hot = inlet_temp_hot + (Q_h_peltier)/(m_dot_air_hot * Cp_air);
+    power_required = num_modules_parallel * num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
     coefficient_performance = -100 * Q_c_peltier / power_required;
     
-    cooling_power_arr(i) = Q_c_peltier * num_modules_parallel;
-    heating_power_arr(i) = Q_h_peltier * num_modules_parallel;
-    power_required_arr(i) = power_required * num_modules_parallel;
+    cooling_power_arr(i) = Q_c_peltier;
+    heating_power_arr(i) = Q_h_peltier;
+    power_required_arr(i) = power_required;
     outlet_temp_cold_arr(i) =  outlet_temp_cold - 273.15;
     
     % Find optimal current which gives max cooling
     if -Q_c_peltier > -max_cooling_power
-        max_cooling_power = Q_c_peltier * num_modules_parallel;
-        max_heating_power = Q_h_peltier * num_modules_parallel;
+        max_cooling_power = Q_c_peltier;
+        max_heating_power = Q_h_peltier;
         J_optimal = J_e;
         T_h_optimal = T_h_peltier;
         T_c_optimal = T_c_peltier;
-        power_required_optimal = power_required * num_modules_parallel;
+        power_required_optimal = power_required;
         COP_optimal = coefficient_performance;
         outlet_temp_cold_optimal = outlet_temp_cold;
         outlet_temp_hot_optimal = outlet_temp_hot;
