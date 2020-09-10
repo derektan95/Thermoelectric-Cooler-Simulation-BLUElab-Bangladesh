@@ -14,9 +14,8 @@ This is a repository containing the matlab code simulating the hot side and cold
 The image below is a breakdown of a single thermoelectric chip. Given engineering analysis performed using the matlab simulation, I proceeded with setting up a simple test rig that would serve to validate this matlab simulation. Once validated, this model could be used as a guide towards the final design of the thermoelectric cooler that would meet the specified requirements. 
 
 <img src="media/peltier_chip_diagram.png" width="900" height="400" />
-[Kaviany, M. “Heat Transfer Physics”. Cambridge University Press, 2014.]
+[Kaviany, M. “Heat Transfer Physics”. Cambridge University Press, 2014.]<br/><br/>
 
-<br/>
 <img src="media/testing.jpg" width="900" height="400" />
 
 
