@@ -7,6 +7,7 @@ This is a repository containing the matlab code simulating the hot side and cold
 
 
 ## Final Capstone Presentation
+Please **click on the image below** to view the youtube video of the final presentation.
 [![Final Presentation](https://img.youtube.com/vi/2auO7Q0tacs/maxresdefault.jpg)](https://www.youtube.com/watch?v=2auO7Q0tacs)
 
 
