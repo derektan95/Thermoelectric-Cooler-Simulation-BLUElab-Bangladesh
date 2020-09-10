@@ -21,5 +21,5 @@ The image below is a breakdown of a single thermoelectric chip. Given engineerin
 
 
 ## References
-**Mentor:** Professor Massoud Kaviany (University of Michigan, Ann Arbor)
+**Mentor:** Professor Massoud Kaviany (University of Michigan, Ann Arbor)<br/>
 **Final Report:** ME450_Team8_Final_Report.pdf
