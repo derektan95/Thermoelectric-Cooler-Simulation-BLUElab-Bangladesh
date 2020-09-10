@@ -16,7 +16,7 @@ The image below is a breakdown of a single thermoelectric chip. Given engineerin
 <img src="media/peltier_chip_diagram.png" width="900" height="400" />
 [Kaviany, M. “Heat Transfer Physics”. Cambridge University Press, 2014.]
 
-
+<br/>
 <img src="media/testing.jpg" width="900" height="400" />
 
 
