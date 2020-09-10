@@ -20,6 +20,10 @@ The image below is a breakdown of a single thermoelectric chip. Given engineerin
 <img src="media/testing.jpg" width="900" height="400" />
 
 
+## Special Thanks
+This project was made possible with the help of peers, subject matter experts, and faculty members at the University of Michigan. I would first like to thank the **BLUELab team** for their tireless effort in making this project a success thus far. I would also like to thank the **ME450 team** comprised of talented mechanical engineers who helped with the conception of the thermoelectric cooler idea. **Professor Steven Skerlos,** a ME professor who is also the advisor for the Center for Socially Engaged Design, provided the team with invaluable insights and helped us navigate through tough partnership dilemma. **Charlie Michaels**, associate director for the Center for Socially Engaged Design, who accompanied the team during the partnership evaluation trip and provided continuous feedback to the BLUElab team through the years. I want to thank our faculty advisor, **Professor Massoud Kaviany**, for his guidance and support for this project from start to finish. His expertise in heat transfer analysis, positive encouragement, and feedback was crucial to this design experience, and we owe our success to him. Last but not least, I want to thank the **Engineering Honors department** for motivating us students to do our very best in our time in college.
+
+
 ## References
-**Mentor:** Professor Massoud Kaviany (University of Michigan, Ann Arbor)<br/>
-**Final Report:** ME450_Team8_Final_Report.pdf
+**Codebase:** `cooler_project_bangladesh` folder
+**Final Report:** `ME450_Team8_Final_Report.pdf` file
