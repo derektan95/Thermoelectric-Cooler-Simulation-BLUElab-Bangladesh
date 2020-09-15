@@ -4,7 +4,7 @@
 During my college days in the University of Michigan - Ann Arbor, I had the preveilege of co-founding a multidisciplinary design team alongside a few passionate students, namely Tasin Malik, Rumi Deb, Raisa Faatimah and Abrar Iqbal. Our primary goal was to come up with **engineering solutions to provide thermal comfort to the urban slums residents in Dhaka, Bangladesh**. In the first 2 years of its inception, the team has been focused on choosing the most suitable partner Non-Governmental Organization **(Spreeha Foundation)** and finding out what the most pressing needs in the urban slum community were. Subsequently, I developed this project further with a separate group of mechanical engineering students for my final year project (ME450), in hope of coming up with a feasible prototype. 
 
 <p align="center">
-    <img src="media/bluelab_bd_team.png" width="700" height="450" />
+    <img src="media/bluelab_bd_team.jpg" width="700" height="450" />
 </p>
 
 This is a repository containing the matlab code simulating the hot side and cold side temperature of thermoelectric cooler with heat sinks attached to both sides to determine effects on outlet air temperature, using key heat transfer equations. Please refer to Pg 22 - 32 of the final report for more detailed analysis of the thermoelectric cooling calculations. 
