@@ -14,7 +14,7 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 %% Define simulation parameters (CHANGME)
 
 % Number of stages (for peltier modules in series)
-num_stages = 2;
+num_modules_series = 2;
 
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
@@ -88,13 +88,13 @@ for i = 1:length(delta_J_arr)
     fprintf('\n<strong>===Iteration %d===\n</strong>', i);
     fprintf('Input Current (J_e): %.2f A \n\n', J_e);
     
-    % Accumulated variables for through "num_stages" stages
+    % Accumulated variables for through "num_modules_series" stages
     cooling_power_total = 0;
     heating_power_total = 0;
     power_required_total = 0;
     
     % Loop based on number of stages
-    for j = 1:num_stages
+    for j = 1:num_modules_series
         
         fprintf('<strong>-Stage %d- \n</strong>', j);
         fprintf('Inlet Air Temperature - Cold Side (T_in_cold): %.3f K \n', inlet_temp_cold);
@@ -216,7 +216,7 @@ end
 hold on;
 figure(1)
 plot(delta_J_arr, -cooling_power_arr, delta_J_arr, power_required_arr, delta_J_arr, outlet_temp_cold_arr, delta_J_arr, COP_arr);
-title("Input Current Analysis (TEC1-12710) - " + num_stages + " Peltier Modules in Series [" + CFM_nominal_cold + " CFM]");
+title("Input Current Analysis (TEC1-12710) - " + num_modules_series + " Peltier Modules in Series [" + CFM_nominal_cold + " CFM]");
 xlabel("Current [A]");
 ylabel("Magnitude");
 legend("Cooling Power [W]", "Power Consumed [W]", "Outlet Temp [degC]", "COP [%]", "Location", "NorthEast");
