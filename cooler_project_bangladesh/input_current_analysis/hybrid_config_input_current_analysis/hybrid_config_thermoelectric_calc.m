@@ -1,8 +1,18 @@
 %% Load essential parameters
-% Implement struct data structure in the future!
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% Thermoelectric simulation for peltier themoeletric chips in both  %
+% series and parallel configuration.                                %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 % warning('off','all');           % Turn off all warnings
-run("hybrid_config_param_thermoelectric_cooling.m");
+
+clear global;   % Clear all global variables
+clc;clear;      % Clear all variables
+close all;      % Close all graphs
+
+% Load global variables (TODO: CHANGE!)
+run("hybrid_config_param_thermoelectric_cooling.m");  
 
 %% Declare variables as global for use in other scripts (bad practice)
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
@@ -11,14 +21,14 @@ global R_e_hc R_k_hc alpha_seeback num_semi_cond
 global fin_width_cold fin_length_cold fin_thickness_cold sink_height_cold num_fins_cold k_fin_cold per_fin_area_cold base_area_cold fin_area_total_cold
 global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_hot k_fin_hot per_fin_area_hot base_area_hot fin_area_total_hot 
 
-%% Define simulation parameters (CHANGME)
+%% Define simulation parameters (TODO: CHANGE!)
 
 % Number of stages (for peltier modules in series)
 num_modules_series = 2;
 num_parallel_branches = 4;
 
 % General parameters
-J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
+J_e = 0;                    % Optimal current 
 J_iters = 100;
 J_max = 10.0;
 
@@ -26,7 +36,7 @@ J_max = 10.0;
 inlet_temp_cold = 308.15;   % K
 CFM_nominal_cold = 69.15;   % Back-calculated from emprical testing (See spreadsheet)                                
 CFM_fan_cold = CFM_nominal_cold / num_parallel_branches;       % Per Parallel Branch [CubicFt/min]
-volumetric_flow_rate_cold = CFM_fan_cold * ((0.3048^3) / 60); % m^3/s - conversion factor
+volumetric_flow_rate_cold = CFM_fan_cold * ((0.3048^3) / 60);  % m^3/s - conversion factor
 m_dot_air_cold = volumetric_flow_rate_cold * rho_air;
 total_cross_section_fin_area = Area_cross_sect_cold_per_channel * num_channels;
 air_speed_cold = volumetric_flow_rate_cold / total_cross_section_fin_area ;         % m/s
@@ -34,11 +44,12 @@ m_dot_air_cold_per_channel = Area_cross_sect_cold_per_channel * rho_air * air_sp
 
 % Initial conditions - Hot Side (Air not restricted to channel)
 inlet_temp_hot = 308.15;   % K
-CFM_fan_hot = 59;              % CubicFt/min
-volumetric_flow_rate_hot = CFM_fan_hot * ((0.3048^3) / 60);   % m^3/s - conversion factor
+CFM_nominal_hot = 69.15;   % Back-calculated from emprical testing (See spreadsheet)                                
+CFM_fan_hot = CFM_nominal_hot / num_parallel_branches;       % Per Parallel Branch [CubicFt/min]
+volumetric_flow_rate_hot = CFM_fan_hot * ((0.3048^3) / 60);  % m^3/s - conversion factor
 m_dot_air_hot = volumetric_flow_rate_hot / rho_air;
-fan_area_hot = (pi * 0.04^2 - pi * 0.015^2);                                       % CHANGEME
-air_speed_hot = volumetric_flow_rate_hot / fan_area_hot ;         % m/s
+fan_area_hot = (pi * 0.07^2 - pi * 0.025^2);                 % CHANGEME
+air_speed_hot = volumetric_flow_rate_hot / fan_area_hot ;    % m/s
 
 % Compute convective coefficient & fin efficiencies
 [R_ku_cold, h_cold] = compute_convective_coefficient_cold_NTU(air_speed_cold, area_per_channel, fin_width_cold, Dh_cold_per_channel, m_dot_air_cold_per_channel);
@@ -49,9 +60,9 @@ overall_fin_eff_cold = compute_fin_efficiency(h_cold, k_fin_cold, fin_thickness_
 
 %% Print initialization message
 fprintf('<strong>***Initialization***\n</strong>');
-fprintf('Inlet Air Temperature - Cold Side (T_in_cold): %.3f K \n', inlet_temp_cold);
+fprintf('Inlet Air Temperature - Cold Side (T_in_cold): %.3f degC \n', inlet_temp_cold - 273.16);
 fprintf('Inlet Air Speed - Cold Side (U_cold): %.1f m/s \n', air_speed_cold);
-fprintf('Inlet Air Temperature - Hot Side (T_in_hot): %.3f K \n', inlet_temp_hot);
+fprintf('Inlet Air Temperature - Hot Side (T_in_hot): %.3f degC \n', inlet_temp_hot - 273.16);
 fprintf('Inlet Air Speed - Hot Side (U_hot): %.1f m/s \n', air_speed_hot);
 fprintf('Convective Coefficient Resistance PER CHANNEL (R_ku_c) - Cold Side: %.3f K/W\n', R_ku_cold);
 fprintf('Convective Coefficient Resistance (R_ku_h) - Hot Side: %.3f K/W\n', R_ku_hot);
@@ -93,7 +104,7 @@ for i = 1:length(delta_J_arr)
     for j = 1:num_modules_series
         
         fprintf('<strong>-Stage %d- \n</strong>', j);
-        fprintf('Inlet Air Temperature - Cold Side (T_in_cold): %.3f K \n', inlet_temp_cold);
+        fprintf('Inlet Air Temperature - Cold Side (T_in_cold): %.3f degC \n', inlet_temp_cold - 273.16);
     
         
         % % % % % % % % % Per Parallel Branch Calculations % % % % % % % % % % % 
@@ -126,7 +137,7 @@ for i = 1:length(delta_J_arr)
         
         % Update inlet temperature to outlet temp of previous iteration
         inlet_temp_cold = outlet_temp_cold;
-        fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.3f K \n\n', outlet_temp_cold);
+        fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.3f degC \n\n', outlet_temp_cold - 273.16);
         
     end
     
@@ -160,15 +171,15 @@ for i = 1:length(delta_J_arr)
     
     % Cold side
     fprintf('---\n');
-    fprintf('Cold side Temperature (T_c): %.1f K \n', T_c_peltier);
+    fprintf('Cold side Temperature (T_c): %.1f degC \n', T_c_peltier - 273.16);
     fprintf('Overall Cooling Power - Cold Side (Q_c_peltier): %.2f W\n', cooling_power_total);
-    fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.1f K\n', outlet_temp_cold);
+    fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.1f degC\n', outlet_temp_cold - 273.16);
     
     % Hot side
     fprintf('---\n');
-    fprintf('Hot side Temperature (T_h): %.1f K \n', T_h_peltier);
+    fprintf('Hot side Temperature (T_h): %.1f degC \n', T_h_peltier - 273.16);
     fprintf('Overall Heating Power - Hot Side (Q_h_peltier): %.2f W\n', heating_power_total);
-    fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp_hot);
+    fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f degC\n\n', outlet_temp_hot - 273.16);
 
 end
 
@@ -183,15 +194,15 @@ fprintf('Coefficient of Performance (COP): %.1f %% \n', COP_optimal);
 
 % Cold side
 fprintf('---\n');
-fprintf('Cold side Temperature (T_c): %.1f K \n', T_c_optimal);
+fprintf('Cold side Temperature (T_c): %.1f degC \n', T_c_optimal - 273.16);
 fprintf('Cooling Power - Cold Side (Q_c_peltier): %.2f W\n', max_cooling_power);
-fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.1f K\n', outlet_temp_cold_optimal);
+fprintf('Outlet Air Temperature - Cold Side (T_out_cold): %.1f degC\n', outlet_temp_cold_optimal - 273.16);
 
 % Hot side
 fprintf('---\n');
-fprintf('Hot side Temperature (T_h): %.1f K \n', T_h_optimal);
+fprintf('Hot side Temperature (T_h): %.1f degC \n', T_h_optimal - 273.16);
 fprintf('Heating Power - Hot Side (Q_h_peltier): %.2f W\n', max_heating_power);
-fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f K\n\n', outlet_temp_hot_optimal);
+fprintf('Outlet Air Temperature - Hot Side (T_out_hot): %.1f degC\n\n', outlet_temp_hot_optimal - 273.16);
 
 
 %% Plot final graphs

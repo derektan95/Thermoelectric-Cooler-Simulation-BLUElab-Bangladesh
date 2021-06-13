@@ -1,8 +1,3 @@
-%% Properties for calculation
-
-clear global;
-clc;clear;
-
 %% Declare variables as global for use in other scripts (bad practice)
 global kin_visc_air Cp_air k_air alpha_air Pr_air rho_air 
 global Area_cross_sect_cold_per_channel Dh_cold_per_channel num_channels area_per_channel
