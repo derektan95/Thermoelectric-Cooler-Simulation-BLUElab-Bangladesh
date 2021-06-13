@@ -15,7 +15,7 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 
 % Number of stages (for peltier modules in series)
 num_modules_series = 2;
-num_modules_parallel = 4;
+num_parallel_branches = 4;
 
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
@@ -25,7 +25,7 @@ J_max = 10.0;
 % Initial conditions - Cold Side (Air restricted to channel)
 inlet_temp_cold = 308.15;   % K
 CFM_nominal_cold = 69.15;   % Back-calculated from emprical testing (See spreadsheet)                                
-CFM_fan_cold = CFM_nominal_cold / num_modules_parallel;       % Per Parallel Branch [CubicFt/min]
+CFM_fan_cold = CFM_nominal_cold / num_parallel_branches;       % Per Parallel Branch [CubicFt/min]
 volumetric_flow_rate_cold = CFM_fan_cold * ((0.3048^3) / 60); % m^3/s - conversion factor
 m_dot_air_cold = volumetric_flow_rate_cold * rho_air;
 total_cross_section_fin_area = Area_cross_sect_cold_per_channel * num_channels;
@@ -120,9 +120,9 @@ for i = 1:length(delta_J_arr)
         % % % % % % % % % ALL Parallel Branch Calculations % % % % % % % % % % % 
         
         % Increment data for variables tracking overall performance
-        cooling_power_total = cooling_power_total + (Q_c_peltier * num_modules_parallel);
-        heating_power_total = heating_power_total + (Q_h_peltier * num_modules_parallel);
-        power_required_total = power_required_total + (power_required * num_modules_parallel);
+        cooling_power_total = cooling_power_total + (Q_c_peltier * num_parallel_branches);
+        heating_power_total = heating_power_total + (Q_h_peltier * num_parallel_branches);
+        power_required_total = power_required_total + (power_required * num_parallel_branches);
         
         % Update inlet temperature to outlet temp of previous iteration
         inlet_temp_cold = outlet_temp_cold;
@@ -203,21 +203,12 @@ for i = 1:length(delta_J_arr)
     end
 end
 
-% % Plot graph of Cooling power against Current
-% figure(1)
-% plot(delta_J_arr, cooling_power_arr, delta_J_arr, heating_power_arr, delta_J_arr, power_required_arr, delta_J_arr, COP_arr);
-% title("Power against Input Current");
-% xlabel("Current [A]");
-% ylabel("Power [W]");
-% legend("Cooling Power (Q_c)", "Heating Power (Q_h)", "Power Input", "COP [%]",  "Location", "NorthEast");
-% grid on;
-% set(gca,'FontSize',12)
-
 % Plot abs cooling power and power consumption against current
 hold on;
 figure(1)
 plot(delta_J_arr, -cooling_power_arr, delta_J_arr, power_required_arr, delta_J_arr, outlet_temp_cold_arr, delta_J_arr, COP_arr);
-title("Input Current Analysis (TEC1-12710) - " + num_modules_series + " Peltier Modules in Series [" + CFM_nominal_cold + " CFM]");
+title("Input Current Analysis (8x TEC1-12710) [" + CFM_nominal_cold + " CFM]" + newline + ...
+    num_modules_series + " Peltier Modules in Series; " + num_parallel_branches + " Parallel Branches");
 xlabel("Current [A]");
 ylabel("Magnitude");
 legend("Cooling Power [W]", "Power Consumed [W]", "Outlet Temp [degC]", "COP [%]", "Location", "NorthEast");

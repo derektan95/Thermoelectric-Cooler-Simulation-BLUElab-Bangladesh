@@ -19,7 +19,7 @@ num_modules_parallel = 4;
 
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
-J_iters = 100;
+J_iters = 10;
 J_max = 10.0;
 
 % Initial conditions - Cold Side (Air restricted to channel)
@@ -28,13 +28,9 @@ CFM_nominal_cold = 69.15;   % Back-calculated from emprical testing (See spreads
 CFM_fan_cold = CFM_nominal_cold / num_modules_parallel;       % Per Parallel Branch [CubicFt/min]
 volumetric_flow_rate_cold = CFM_fan_cold * ((0.3048^3) / 60); % m^3/s - conversion factor
 m_dot_air_cold = volumetric_flow_rate_cold * rho_air;
-% fan_area_cold = pi * 0.02^2;                                % CHANGEME
 total_cross_section_fin_area = Area_cross_sect_cold_per_channel * num_channels;
 air_speed_cold = volumetric_flow_rate_cold / total_cross_section_fin_area ;         % m/s
-
-% air_speed_cold = 2.2;      % m/s
 m_dot_air_cold_per_channel = Area_cross_sect_cold_per_channel * rho_air * air_speed_cold;
-% m_dot_air_cold_per_channel_1 = m_dot_air_cold / num_channels;
 
 % Initial conditions - Hot Side (Air not restricted to channel)
 inlet_temp_hot = 308.15;   % K
@@ -207,22 +203,11 @@ for i = 1:length(delta_J_arr)
     end
 end
 
-% % Plot graph of Cooling power against Current
-% figure(1)
-% plot(delta_J_arr, cooling_power_arr, delta_J_arr, heating_power_arr, delta_J_arr, power_required_arr, delta_J_arr, COP_arr);
-% title("Power against Input Current");
-% xlabel("Current [A]");
-% ylabel("Power [W]");
-% legend("Cooling Power (Q_c)", "Heating Power (Q_h)", "Power Input", "COP [%]",  "Location", "NorthEast");
-% grid on;
-% set(gca,'FontSize',12)
-
 % Plot abs cooling power and power consumption against current
 hold on;
 figure(1)
 plot(delta_J_arr, -cooling_power_arr, delta_J_arr, power_required_arr, delta_J_arr, outlet_temp_cold_arr, delta_J_arr, COP_arr);
 title("Input Current Analysis (TEC1-12710) - " + num_modules_series + " Peltier Modules in Series [" + CFM_nominal_cold + " CFM]");
-sgtitle(sub_plot_title = {['Test = ', 9], []};);
 xlabel("Current [A]");
 ylabel("Magnitude");
 legend("Cooling Power [W]", "Power Consumed [W]", "Outlet Temp [degC]", "COP [%]", "Location", "NorthEast");
