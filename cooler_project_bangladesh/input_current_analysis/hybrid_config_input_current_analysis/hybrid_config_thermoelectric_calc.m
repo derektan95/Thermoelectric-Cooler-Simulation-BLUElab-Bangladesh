@@ -15,6 +15,7 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 
 % Number of stages (for peltier modules in series)
 num_modules_series = 2;
+num_modules_parallel = 4;
 
 % General parameters
 J_e = 0;              % Optimal current (CHANGE TO FUNCTION)
@@ -99,6 +100,9 @@ for i = 1:length(delta_J_arr)
         fprintf('<strong>-Stage %d- \n</strong>', j);
         fprintf('Inlet Air Temperature - Cold Side (T_in_cold): %.3f K \n', inlet_temp_cold);
     
+        
+        % % % % % % % % % Per Parallel Branch Calculations % % % % % % % % % % % 
+        
         % x = T_h, y = T_c, z = Q_c
         syms x y z
         eqn1 = ((x - y) / R_k_hc) + (overall_fin_eff_hot * (x-inlet_temp_hot) / R_ku_hot) == (num_semi_cond * alpha_seeback * J_e * x) + (0.5 * num_semi_cond * R_e_hc * J_e^2); 
@@ -115,12 +119,15 @@ for i = 1:length(delta_J_arr)
         outlet_temp_cold = inlet_temp_cold + ( (Q_c_peltier / num_channels) / (m_dot_air_cold_per_channel * Cp_air) );
         outlet_temp_hot = inlet_temp_hot + Q_h_peltier/(m_dot_air_hot * Cp_air);
         power_required = num_semi_cond * ((R_e_hc * J_e^2) + (alpha_seeback * J_e * (T_h_peltier - T_c_peltier)) );
-        coefficient_performance = -100 * Q_c_peltier / power_required;
+        % coefficient_performance = -100 * Q_c_peltier / power_required;
+
+        
+        % % % % % % % % % ALL Parallel Branch Calculations % % % % % % % % % % % 
         
         % Increment data for variables tracking overall performance
-        cooling_power_total = cooling_power_total + Q_c_peltier;
-        heating_power_total = heating_power_total + Q_h_peltier;
-        power_required_total = power_required_total + power_required;
+        cooling_power_total = cooling_power_total + (Q_c_peltier * num_modules_parallel);
+        heating_power_total = heating_power_total + (Q_h_peltier * num_modules_parallel);
+        power_required_total = power_required_total + (power_required * num_modules_parallel);
         
         % Update inlet temperature to outlet temp of previous iteration
         inlet_temp_cold = outlet_temp_cold;
