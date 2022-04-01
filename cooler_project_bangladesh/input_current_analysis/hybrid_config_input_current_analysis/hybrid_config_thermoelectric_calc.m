@@ -26,6 +26,7 @@ global fin_width_hot fin_length_hot fin_thickness_hot sink_height_hot num_fins_h
 % Number of stages (for peltier modules in series)
 num_modules_series = 2;
 num_parallel_branches = 4;
+half_cooling_power_on_second_series_iter = true  % To mimic 6 instead of 8 chips
 
 % General parameters
 J_e = 0;                    % Optimal current 
@@ -106,7 +107,11 @@ for i = 1:length(delta_J_arr)
         fprintf('<strong>-Stage %d- \n</strong>', j);
         fprintf('Inlet Air Temperature - Cold Side (T_in_cold): %.3f degC \n', inlet_temp_cold - 273.16);
     
-        
+        cooling_power_factor = 1;
+        if half_cooling_power_on_second_series_iter && j == 2
+            cooling_power_factor = cooling_power_factor / 2;
+            fprintf('<strong>Halfed Q\n</strong>', j);
+        end
         % % % % % % % % % Per Parallel Branch Calculations % % % % % % % % % % % 
         
         % x = T_h, y = T_c, z = Q_c
@@ -118,7 +123,7 @@ for i = 1:length(delta_J_arr)
         sol = solve([eqn1, eqn2, eqn3], [x, y, z]);
         T_h_peltier = double(sol.x);
         T_c_peltier = double(sol.y);
-        Q_c_peltier = double(sol.z);        % Already factored in cold efficiency and all channels...
+        Q_c_peltier = double(sol.z) * cooling_power_factor;        % Already factored in cold efficiency and all channels...
 
         Q_h_peltier = overall_fin_eff_hot * (T_h_peltier - inlet_temp_hot) / R_ku_hot;
         power_conduction_peltier = (T_h_peltier - T_c_peltier) / R_k_hc;
